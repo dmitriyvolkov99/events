@@ -87,9 +87,9 @@ ghcr.io/<owner>/events-frontend
 
 
 Swagger доступен здесь
-...
+```
 http://localhost:8080/swagger/index.html
-...
+```
 
 На сервере запуск выполняется через:
 
