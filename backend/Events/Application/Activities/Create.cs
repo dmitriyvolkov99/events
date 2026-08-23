@@ -1,67 +1,93 @@
-using System.Threading;
-using System.Threading.Tasks;
 using Application.Core;
+using Application.Interfaces;
 using Domain;
 using FluentValidation;
 using MediatR;
-using Persistence;
-using Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Persistence;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Application.Activities
+namespace Application.Activities;
+
+public class Create
 {
-    public class Create
+    public class Command : IRequest<Result<Unit>>
     {
-        public class Command : IRequest<Result<Unit>>
+        public Activity Activity { get; set; } = null!;
+    }
+
+    public class CommandValidator : AbstractValidator<Command>
+    {
+        public CommandValidator()
         {
-            public Activity Activity { get; set; } = null!;
+            RuleFor(x => x.Activity).SetValidator(new ActivityValidator());
+        }
+    }
+
+    public class Handler : IRequestHandler<Command, Result<Unit>>
+    {
+        private readonly DataContext _context;
+        private readonly IUserAccessor _userAccessor;
+        private readonly ILogger<Handler> _logger;
+
+        public Handler(
+            DataContext context,
+            IUserAccessor userAccessor,
+            ILogger<Handler> logger)
+        {
+            _userAccessor = userAccessor;
+            _context = context;
+            _logger = logger;
         }
 
-        public class CommandValidator : AbstractValidator<Command>
+        public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
         {
-            public CommandValidator()
+            var username = _userAccessor.GetUsername();
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(
+                    x => x.UserName == username,
+                    cancellationToken);
+
+            if (user == null)
             {
-                RuleFor(x => x.Activity).SetValidator(new ActivityValidator());
+                _logger.LogWarning(
+                    "Failed to create activity: user {Username} was not found",
+                    username);
+
+                return Result<Unit>.Failure("User not found");
             }
-        }
 
-        public class Handler : IRequestHandler<Command, Result<Unit>>
-        {
-            private readonly DataContext _context;
-            private readonly IUserAccessor _userAccessor;
-
-            public Handler(DataContext context, IUserAccessor userAccessor)
+            var attendee = new ActivityAttendee
             {
-                _userAccessor = userAccessor;
-                _context = context;
-            }
+                AppUser = user,
+                Activity = request.Activity,
+                isHost = true
+            };
 
-            public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
+            request.Activity.Attendees.Add(attendee);
+
+            _context.Activities.Add(request.Activity);
+
+            var result = await _context.SaveChangesAsync(cancellationToken) > 0;
+
+            if (!result)
             {
-                var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == _userAccessor.GetUsername(), cancellationToken);
+                _logger.LogError(
+                    "Failed to create activity for user {Username}",
+                    username);
 
-                if (user == null)
-                {
-                    return Result<Unit>.Failure("User not found");
-                }
-
-                var attendee = new ActivityAttendee
-                {
-                    AppUser = user,
-                    Activity = request.Activity,
-                    isHost = true
-                };
-
-                request.Activity.Attendees.Add(attendee);
-
-                _context.Activities.Add(request.Activity);
-
-                var result = await _context.SaveChangesAsync(cancellationToken) > 0;
-
-                if (!result) return Result<Unit>.Failure("Failed to create activity");
-
-                return Result<Unit>.Success(Unit.Value);
+                return Result<Unit>.Failure("Failed to create activity");
             }
+
+            _logger.LogInformation(
+                "Activity {ActivityId} created by user {Username}",
+                request.Activity.Id,
+                username);
+
+            return Result<Unit>.Success(Unit.Value);
         }
     }
 }

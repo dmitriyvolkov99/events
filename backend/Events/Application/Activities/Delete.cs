@@ -1,47 +1,76 @@
+using Application.Core;
+using Application.Interfaces;
+using Domain;
+using MediatR;
+using Microsoft.Extensions.Logging;
+using Persistence;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.Core;
-using Domain;
-using MediatR;
-using Persistence;
 
-namespace Application.Activities
+namespace Application.Activities;
+
+public class Delete
 {
-    public class Delete
+    public class Command : IRequest<Result<Unit>>
     {
-        public class Command : IRequest<Result<Unit>>
+        public Guid Id { get; set; }
+    }
+
+    public class Handler : IRequestHandler<Command, Result<Unit>>
+    {
+        private readonly DataContext _context;
+        private readonly IUserAccessor _userAccessor;
+        private readonly ILogger<Handler> _logger;
+
+        public Handler(
+            DataContext context,
+            IUserAccessor userAccessor,
+            ILogger<Handler> logger)
         {
-            public Guid Id { get; set; }
+            _context = context;
+            _userAccessor = userAccessor;
+            _logger = logger;
         }
 
-        public class Handler : IRequestHandler<Command, Result<Unit>>
+        public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
         {
-            private readonly DataContext _context;
-            public Handler(DataContext context)
+            var username = _userAccessor.GetUsername();
+
+            var activity = await _context.Activities.FindAsync(
+                [request.Id],
+                cancellationToken);
+
+            if (activity == null)
             {
-                _context = context;
+                _logger.LogWarning(
+                    "Failed to delete activity {ActivityId}: activity was not found. User: {Username}",
+                    request.Id,
+                    username);
+
+                return Result<Unit>.Failure("Activity not found");
             }
 
-            public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
+            _context.Remove(activity);
+
+            var result = await _context.SaveChangesAsync(cancellationToken) > 0;
+
+            if (!result)
             {
-                var activity = await _context.Activities.FindAsync(
-                    [request.Id],
-                    cancellationToken);
+                _logger.LogError(
+                    "Failed to delete activity {ActivityId}. User: {Username}",
+                    request.Id,
+                    username);
 
-                if (activity == null)
-                {
-                    return Result<Unit>.Failure("Activity not found");
-                }
-
-                _context.Remove(activity);
-
-                var result = await _context.SaveChangesAsync(cancellationToken) > 0;
-
-                if (!result) return Result<Unit>.Failure("Failed to delete the activity");
-
-                return Result<Unit>.Success(Unit.Value);
+                return Result<Unit>.Failure("Failed to delete the activity");
             }
+
+            _logger.LogInformation(
+                "Activity {ActivityId} deleted by user {Username}",
+                request.Id,
+                username);
+
+            return Result<Unit>.Success(Unit.Value);
         }
     }
 }

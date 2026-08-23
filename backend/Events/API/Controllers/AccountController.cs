@@ -18,11 +18,18 @@ public class AccountController : ControllerBase
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signManager;
     private readonly TokenService _tokenService;
-    public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signManager, TokenService tokenService)
+    private readonly ILogger<AccountController> _logger;
+
+    public AccountController(
+        UserManager<AppUser> userManager,
+        SignInManager<AppUser> signManager,
+        TokenService tokenService,
+        ILogger<AccountController> logger)
     {
         _tokenService = tokenService;
         _signManager = signManager;
         _userManager = userManager;
+        _logger = logger;
     }
 
     /// <summary>
@@ -39,14 +46,29 @@ public class AccountController : ControllerBase
     {
         var user = await _userManager.Users.Include(p => p.Photos).FirstOrDefaultAsync(x => x.Email == loginDto.Email);
 
-        if (user == null) return NotFound();
+        if (user == null)
+        {
+            _logger.LogWarning(
+                "Login attempt failed: user with email {Email} was not found",
+                loginDto.Email);
+
+            return NotFound();
+        }
 
         var result = await _signManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
 
         if (result.Succeeded)
         {
+            _logger.LogInformation(
+                "User {Username} logged in successfully",
+                user.UserName);
+
             return CreateUserObject(user);
         }
+
+        _logger.LogWarning(
+            "Login attempt failed for user {Username}",
+            user.UserName);
 
         return Unauthorized();
     }
@@ -64,12 +86,20 @@ public class AccountController : ControllerBase
     {
         if (await _userManager.Users.AnyAsync(x => x.Email == registerDto.Email))
         {
+            _logger.LogWarning(
+                "Registration attempt failed: email {Email} is already registered",
+                registerDto.Email);
+
             ModelState.AddModelError("email", "Email taken");
             return ValidationProblem();
         }
 
         if (await _userManager.Users.AnyAsync(x => x.UserName == registerDto.Username))
         {
+            _logger.LogWarning(
+                "Registration attempt failed: username {Username} is already taken",
+                registerDto.Username);
+
             ModelState.AddModelError("username", "Username taken");
             return ValidationProblem();
         }
@@ -85,8 +115,17 @@ public class AccountController : ControllerBase
 
         if (result.Succeeded)
         {
+            _logger.LogInformation(
+                            "User {Username} registered successfully",
+                            user.UserName);
+
             return CreateUserObject(user);
         }
+
+        _logger.LogError(
+           "Failed to register user {Username}. Identity errors: {Errors}",
+           user.UserName,
+           string.Join("; ", result.Errors.Select(e => e.Description)));
 
         return BadRequest("Problem registering user");
     }
