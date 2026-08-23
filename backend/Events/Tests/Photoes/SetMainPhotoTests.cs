@@ -3,6 +3,7 @@ using Application.Photos;
 using Domain;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Persistence;
 
@@ -39,9 +40,12 @@ public class SetMainPhotoTests : IDisposable
 
     private SetMain.Handler CreateHandler()
     {
+        var logger = NullLogger<SetMain.Handler>.Instance;
+
         return new SetMain.Handler(
             _context,
-            _userAccessorMock.Object);
+            _userAccessorMock.Object,
+            logger);
     }
 
     private async Task<AppUser> AddUser()

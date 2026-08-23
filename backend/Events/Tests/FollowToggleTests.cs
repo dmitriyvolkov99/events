@@ -3,6 +3,7 @@ using Application.Interfaces;
 using Domain;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Persistence;
 
@@ -39,9 +40,12 @@ public class FollowToggleTests : IDisposable
 
     private FollowToggle.Handler CreateHandler()
     {
+        var logger = NullLogger<FollowToggle.Handler>.Instance;
+
         return new FollowToggle.Handler(
             _context,
-            _userAccessorMock.Object);
+            _userAccessorMock.Object,
+            logger);
     }
 
     private async Task<AppUser> AddUser(

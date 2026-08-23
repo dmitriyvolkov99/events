@@ -1,7 +1,9 @@
 ﻿using Application.Activities;
+using Application.Interfaces;
 using AutoMapper;
 using Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Persistence;
 
@@ -9,6 +11,14 @@ namespace Tests.Activities;
 
 public class EditHandlerTests
 {
+    private readonly Mock<IUserAccessor> _userAccessorMock;
+
+    public EditHandlerTests()
+    {
+        _userAccessorMock = new Mock<IUserAccessor>();
+
+
+    }
     private static DataContext CreateContext()
     {
         var options = new DbContextOptionsBuilder<DataContext>()
@@ -53,9 +63,13 @@ public class EditHandlerTests
                 destination.Venue = source.Venue;
             });
 
+        var logger = NullLogger<Edit.Handler>.Instance;
+
         var handler = new Edit.Handler(
             context,
-            mapper.Object);
+            mapper.Object,
+            _userAccessorMock.Object,
+            logger);
 
         var updatedActivity = new Activity
         {
@@ -100,9 +114,13 @@ public class EditHandlerTests
 
         var mapper = new Mock<IMapper>();
 
+        var logger = NullLogger<Edit.Handler>.Instance;
+
         var handler = new Edit.Handler(
             context,
-            mapper.Object);
+            mapper.Object,
+            _userAccessorMock.Object,
+            logger);
 
         var command = new Edit.Command
         {

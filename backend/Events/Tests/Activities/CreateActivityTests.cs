@@ -2,6 +2,7 @@
 using Application.Interfaces;
 using Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Persistence;
 
@@ -25,9 +26,12 @@ public class CreateActivityTests
             .Setup(x => x.GetUsername())
             .Returns("testuser");
 
+        var logger = NullLogger<Create.Handler>.Instance;
+
         var handler = new Create.Handler(
             context,
-            _userAccessorMock.Object);
+            _userAccessorMock.Object,
+            logger);
 
         var command = new Create.Command
         {
@@ -70,9 +74,12 @@ public class CreateActivityTests
             .Setup(x => x.GetUsername())
             .Returns("testuser");
 
+        var logger = NullLogger<Create.Handler>.Instance;
+
         var handler = new Create.Handler(
             context,
-            _userAccessorMock.Object);
+            _userAccessorMock.Object,
+            logger);
 
         var activity = new Activity
         {

@@ -1,16 +1,32 @@
 ﻿using Application.Activities;
+using Application.Interfaces;
 using Domain;
+using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 
 namespace Tests.Activities;
 
 public class DeleteActivityTests
 {
+    private readonly Mock<IUserAccessor> _userAccessorMock;
+
+    public DeleteActivityTests()
+    {
+        _userAccessorMock = new Mock<IUserAccessor>();
+
+    }
+
     [Fact]
     public async Task Handle_ShouldFail_WhenActivityDoesNotExist()
     {
         await using var context = TestDbContextFactory.Create();
 
-        var handler = new Delete.Handler(context);
+        var logger = NullLogger<Delete.Handler>.Instance;
+
+        var handler = new Delete.Handler(
+            context,
+            _userAccessorMock.Object,
+            logger);
 
         var command = new Delete.Command
         {

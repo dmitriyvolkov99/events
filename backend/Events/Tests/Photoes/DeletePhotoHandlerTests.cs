@@ -3,6 +3,7 @@ using Application.Photos;
 using Domain;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Persistence;
 
@@ -41,10 +42,13 @@ public class DeletePhotoHandlerTests : IDisposable
 
     private Delete.Handler CreateHandler()
     {
+        var logger = NullLogger<Delete.Handler>.Instance;
+
         return new Delete.Handler(
             _context,
             _photoAccessorMock.Object,
-            _userAccessorMock.Object);
+            _userAccessorMock.Object,
+            logger);
     }
 
     private async Task<AppUser> AddUser(

@@ -2,6 +2,7 @@
 using Application.Interfaces;
 using Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Persistence;
 
@@ -36,9 +37,12 @@ public class UpdateAttendanceHandlerTests
 
         var userAccessor = CreateUserAccessor("testuser");
 
+        var logger = NullLogger<UpdateAttendance.Handler>.Instance;
+
         var handler = new UpdateAttendance.Handler(
             context,
-            userAccessor.Object);
+            userAccessor.Object,
+            logger);
 
         var command = new UpdateAttendance.Command
         {
@@ -74,9 +78,12 @@ public class UpdateAttendanceHandlerTests
 
         var userAccessor = CreateUserAccessor("unknown-user");
 
+        var logger = NullLogger<UpdateAttendance.Handler>.Instance;
+
         var handler = new UpdateAttendance.Handler(
             context,
-            userAccessor.Object);
+            userAccessor.Object,
+            logger);
 
         var command = new UpdateAttendance.Command
         {
@@ -132,9 +139,12 @@ public class UpdateAttendanceHandlerTests
 
         var userAccessor = CreateUserAccessor("host");
 
+        var logger = NullLogger<UpdateAttendance.Handler>.Instance;
+
         var handler = new UpdateAttendance.Handler(
             context,
-            userAccessor.Object);
+            userAccessor.Object,
+            logger);
 
         var command = new UpdateAttendance.Command
         {
@@ -206,9 +216,12 @@ public class UpdateAttendanceHandlerTests
 
         var userAccessor = CreateUserAccessor("testuser");
 
+        var logger = NullLogger<UpdateAttendance.Handler>.Instance;
+
         var handler = new UpdateAttendance.Handler(
             context,
-            userAccessor.Object);
+            userAccessor.Object,
+            logger);
 
         var command = new UpdateAttendance.Command
         {
@@ -273,9 +286,12 @@ public class UpdateAttendanceHandlerTests
 
         var userAccessor = CreateUserAccessor("testuser");
 
+        var logger = NullLogger<UpdateAttendance.Handler>.Instance;
+
         var handler = new UpdateAttendance.Handler(
             context,
-            userAccessor.Object);
+            userAccessor.Object,
+            logger);
 
         var command = new UpdateAttendance.Command
         {

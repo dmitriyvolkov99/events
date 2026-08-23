@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using System.Security.Claims;
 
@@ -58,10 +59,13 @@ public class AccountControllerTests
 
     private AccountController CreateController()
     {
+        var logger = NullLogger<AccountController>.Instance;
+
         return new AccountController(
             _userManagerMock.Object,
             _signInManagerMock.Object,
-            _tokenService);
+            _tokenService,
+            logger);
     }
 
 
@@ -140,10 +144,13 @@ public class AccountControllerTests
 
         SetupUsers(users);
 
+        var logger = NullLogger<AccountController>.Instance;
+
         var controller = new AccountController(
             _userManagerMock.Object,
             _signInManagerMock.Object,
-            _tokenService);
+            _tokenService,
+            logger);
 
         var registerDto = new RegisterDto
         {
@@ -181,10 +188,13 @@ public class AccountControllerTests
 
         SetupUsers(users);
 
+        var logger = NullLogger<AccountController>.Instance;
+
         var controller = new AccountController(
             _userManagerMock.Object,
             _signInManagerMock.Object,
-            _tokenService);
+            _tokenService,
+            logger);
 
         var registerDto = new RegisterDto
         {
@@ -223,10 +233,13 @@ public class AccountControllerTests
                         Description = "User creation failed"
                     }));
 
+        var logger = NullLogger<AccountController>.Instance;
+
         var controller = new AccountController(
             _userManagerMock.Object,
             _signInManagerMock.Object,
-            _tokenService);
+            _tokenService,
+            logger);
 
         var registerDto = new RegisterDto
         {
@@ -252,10 +265,13 @@ public class AccountControllerTests
     {
         SetupUsers([]);
 
+        var logger = NullLogger<AccountController>.Instance;
+
         var controller = new AccountController(
             _userManagerMock.Object,
             _signInManagerMock.Object,
-            _tokenService);
+            _tokenService, 
+            logger);
 
         var loginDto = new LoginDto
         {
@@ -287,10 +303,13 @@ public class AccountControllerTests
                 false))
             .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Failed);
 
+        var logger = NullLogger<AccountController>.Instance;
+
         var controller = new AccountController(
             _userManagerMock.Object,
             _signInManagerMock.Object,
-            _tokenService);
+            _tokenService, 
+            logger);
 
         var loginDto = new LoginDto
         {
@@ -329,10 +348,13 @@ public class AccountControllerTests
                 false))
             .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
 
+        var logger = NullLogger<AccountController>.Instance;
+
         var controller = new AccountController(
             _userManagerMock.Object,
             _signInManagerMock.Object,
-            _tokenService);
+            _tokenService, 
+            logger);
 
         var dto = new LoginDto
         {
@@ -368,10 +390,13 @@ public class AccountControllerTests
             .Setup(x => x.Users)
             .Returns(CreateAsyncQueryable(users));
 
+        var logger = NullLogger<AccountController>.Instance;
+
         var controller = new AccountController(
             _userManagerMock.Object,
             _signInManagerMock.Object,
-            _tokenService);
+            _tokenService, 
+            logger);
 
         controller.ControllerContext = new ControllerContext
         {
@@ -405,10 +430,13 @@ public class AccountControllerTests
             .Setup(x => x.Users)
             .Returns(CreateAsyncQueryable(users));
 
+        var logger = NullLogger<AccountController>.Instance;
+
         var controller = new AccountController(
             _userManagerMock.Object,
             _signInManagerMock.Object,
-            _tokenService);
+            _tokenService, 
+            logger);
 
         controller.ControllerContext = new ControllerContext
         {

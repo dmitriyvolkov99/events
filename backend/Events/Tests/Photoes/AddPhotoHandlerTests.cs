@@ -1,9 +1,11 @@
-﻿using Application.Interfaces;
+﻿using Application.Activities;
+using Application.Interfaces;
 using Application.Photos;
 using Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Persistence;
 
@@ -42,10 +44,13 @@ public class AddPhotoHandlerTests : IDisposable
 
     private Add.Handler CreateHandler()
     {
+        var logger = NullLogger<Add.Handler>.Instance;
+
         return new Add.Handler(
             _context,
             _photoAccessorMock.Object,
-            _userAccessorMock.Object);
+            _userAccessorMock.Object,
+            logger);
     }
 
     [Fact]

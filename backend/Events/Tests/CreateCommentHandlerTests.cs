@@ -1,9 +1,11 @@
 ﻿using Application.Comments;
 using Application.Interfaces;
+using Application.Photos;
 using AutoMapper;
 using Domain;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Persistence;
 
@@ -42,10 +44,13 @@ public class CreateCommentHandlerTests : IDisposable
 
     private Create.Handler CreateHandler()
     {
+        var logger = NullLogger<Create.Handler>.Instance;
+
         return new Create.Handler(
             _context,
             _mapperMock.Object,
-            _userAccessorMock.Object);
+            _userAccessorMock.Object,
+            logger);
     }
 
     private async Task<AppUser> AddUser(
