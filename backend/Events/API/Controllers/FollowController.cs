@@ -20,7 +20,6 @@ public class FollowController : BaseApiController
         return HandleResult(await Mediator.Send(new FollowToggle.Command { TargetUsername = username }));
     }
 
-    [HttpGet("{username}")]
     /// <summary>
     /// Returns the followers or following users for the specified user.
     /// </summary>
@@ -28,6 +27,7 @@ public class FollowController : BaseApiController
     /// <param name="predicate">
     /// Specifies which users to return. Accepted values: followers or following.
     /// </param>
+    [HttpGet("{username}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

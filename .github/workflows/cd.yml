@@ -31,21 +31,22 @@ jobs:
         uses: docker/login-action@v4
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
+          username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set image owner
-        run: echo "IMAGE_OWNER=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_ENV
+        id: set_owner
+        run: echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_OUTPUT
 
       - name: Build and push backend
         uses: docker/build-push-action@v7
         with:
           context: ./backend/Events
-          file: ./backend/Events/Dockerfile
+          file: ./backend/Events/API/Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ env.IMAGE_OWNER }}/events-backend:latest
-            ghcr.io/${{ env.IMAGE_OWNER }}/events-backend:${{ github.event.workflow_run.head_sha }}
+            ghcr.io/${{ steps.set_owner.outputs.owner }}/events-backend:latest
+            ghcr.io/${{ steps.set_owner.outputs.owner }}/events-backend:${{ github.event.workflow_run.head_sha }}
 
       - name: Build and push frontend
         uses: docker/build-push-action@v7
@@ -56,5 +57,5 @@ jobs:
           build-args: |
             NGINX_CONF=nginx.prod.conf
           tags: |
-            ghcr.io/${{ env.IMAGE_OWNER }}/events-frontend:latest
-            ghcr.io/${{ env.IMAGE_OWNER }}/events-frontend:${{ github.event.workflow_run.head_sha }}
+            ghcr.io/${{ steps.set_owner.outputs.owner }}/events-frontend:latest
+            ghcr.io/${{ steps.set_owner.outputs.owner }}/events-frontend:${{ github.event.workflow_run.head_sha }}
