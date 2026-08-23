@@ -7,9 +7,15 @@ services:
   backend:
     build:
       context: ./backend/Events
-      dockerfile: Dockerfile
+      dockerfile: API/Dockerfile
 
     container_name: events-backend
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
 
 
   frontend:
