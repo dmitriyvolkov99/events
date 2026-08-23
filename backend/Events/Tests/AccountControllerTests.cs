@@ -270,7 +270,7 @@ public class AccountControllerTests
         var controller = new AccountController(
             _userManagerMock.Object,
             _signInManagerMock.Object,
-            _tokenService, 
+            _tokenService,
             logger);
 
         var loginDto = new LoginDto
@@ -308,7 +308,7 @@ public class AccountControllerTests
         var controller = new AccountController(
             _userManagerMock.Object,
             _signInManagerMock.Object,
-            _tokenService, 
+            _tokenService,
             logger);
 
         var loginDto = new LoginDto
@@ -353,7 +353,7 @@ public class AccountControllerTests
         var controller = new AccountController(
             _userManagerMock.Object,
             _signInManagerMock.Object,
-            _tokenService, 
+            _tokenService,
             logger);
 
         var dto = new LoginDto
@@ -395,7 +395,7 @@ public class AccountControllerTests
         var controller = new AccountController(
             _userManagerMock.Object,
             _signInManagerMock.Object,
-            _tokenService, 
+            _tokenService,
             logger);
 
         controller.ControllerContext = new ControllerContext
@@ -435,7 +435,7 @@ public class AccountControllerTests
         var controller = new AccountController(
             _userManagerMock.Object,
             _signInManagerMock.Object,
-            _tokenService, 
+            _tokenService,
             logger);
 
         controller.ControllerContext = new ControllerContext
