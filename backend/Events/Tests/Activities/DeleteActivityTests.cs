@@ -60,7 +60,9 @@ public class DeleteActivityTests
         context.Activities.Add(activity);
         await context.SaveChangesAsync();
 
-        var handler = new Delete.Handler(context);
+        var logger = NullLogger<Delete.Handler>.Instance;
+
+        var handler = new Delete.Handler(context, _userAccessorMock.Object, logger);
 
         var command = new Delete.Command
         {
