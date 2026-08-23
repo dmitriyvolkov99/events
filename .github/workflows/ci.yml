@@ -91,7 +91,7 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: ./backend/Events
-          file: ./backend/Events/Dockerfile
+          file: ./backend/Events/API/Dockerfile
           push: false
 
       - name: Build frontend image
