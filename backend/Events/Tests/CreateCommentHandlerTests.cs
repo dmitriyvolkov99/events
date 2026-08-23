@@ -93,6 +93,10 @@ public class CreateCommentHandlerTests : IDisposable
     [Fact]
     public async Task Handle_ShouldReturnFailure_WhenActivityDoesNotExist()
     {
+        _userAccessorMock
+            .Setup(x => x.GetUsername())
+            .Returns("bob");
+
         var handler = CreateHandler();
 
         var command = new Create.Command
@@ -110,7 +114,7 @@ public class CreateCommentHandlerTests : IDisposable
 
         _userAccessorMock.Verify(
             x => x.GetUsername(),
-            Times.Never);
+            Times.Once);
     }
 
     [Fact]
