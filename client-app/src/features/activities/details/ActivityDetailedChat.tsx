@@ -1,84 +1,87 @@
-import { Formik, Form, Field, FieldProps } from 'formik'
-import { observer } from 'mobx-react-lite'
-import React, { useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import {Segment, Header, Comment, Loader} from 'semantic-ui-react'
-import { useStore } from '../../../app/stores/store'
+import { Formik, Form, Field, FieldProps } from 'formik';
+import { observer } from 'mobx-react-lite';
+import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import * as Yup from 'yup';
-import { formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNow } from 'date-fns';
+import { useStore } from '../../../app/stores/store';
+import Card from '../../../app/ui/Card';
+import Avatar from '../../../app/ui/Avatar';
+import Spinner from '../../../app/ui/Spinner';
+import { fieldClass } from '../../../app/common/form/fieldClass';
 
-interface Props{
-    activityId: string
+interface Props {
+  activityId: string;
 }
 
-export default observer(function ActivityDetailedChat({activityId}: Props) {
-    const {commentStore} = useStore();
+export default observer(function ActivityDetailedChat({ activityId }: Props) {
+  const { commentStore } = useStore();
 
-    useEffect(() => {
-        if(activityId){
-            commentStore.createHubConnection(activityId);
-        }
+  useEffect(() => {
+    if (activityId) commentStore.createHubConnection(activityId);
+    return () => commentStore.clearComments();
+  }, [commentStore, activityId]);
 
-        return () => {
-            commentStore.clearComments();
-        }
-    }, [commentStore, activityId])
-    return (
-        <>
-            <Segment
-                textAlign='center'
-                attached='top'
-                inverted
-                color='teal'
-                style={{border: 'none'}}
-            >
-                <Header>Chat about this event</Header>
-            </Segment>
-            <Segment attached clearing>
-                <Formik 
-                    onSubmit={(values, {resetForm}) => commentStore.addComment(values).then(() => resetForm())}
-                    initialValues={{body: ''}}
-                    validationSchema={Yup.object({
-                        body: Yup.string().required()
-                    })}
-                >
-                    {({isSubmitting, isValid, handleSubmit}) => (
-                        <Form className='ui form'>
-                            <Field name='body'>
-                                {(props: FieldProps) => (
-                                    <div style={{position: 'relative'}}>
-                                        <Loader active={isSubmitting} />
-                                        <textarea {...props.field} rows={2} placeholder="Enter your comment" onKeyPress={e => {
-                                            if(e.key === 'Enter' && e.shiftKey){
-                                                return;
-                                            }
-                                            if(e.key === 'Enter' && !e.shiftKey){
-                                                e.preventDefault();
-                                                isValid && handleSubmit()
-                                            }
-                                        }}></textarea>
-                                    </div>
-                                )}
-                            </Field>
-                        </Form>
+  return (
+    <Card className="overflow-hidden p-0">
+      <div className="bg-brand-600 px-5 py-3 text-center text-sm font-semibold text-white">
+        Chat about this event
+      </div>
+
+      <div className="p-5">
+        <Formik
+          onSubmit={(values, { resetForm }) => commentStore.addComment(values).then(() => resetForm())}
+          initialValues={{ body: '' }}
+          validationSchema={Yup.object({ body: Yup.string().required() })}
+        >
+          {({ isSubmitting, isValid, handleSubmit }) => (
+            <Form>
+              <Field name="body">
+                {(props: FieldProps) => (
+                  <div className="relative">
+                    <textarea
+                      {...props.field}
+                      rows={2}
+                      placeholder="Enter your comment (Enter to send, Shift+Enter for a new line)"
+                      className={fieldClass(false)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          if (isValid) handleSubmit();
+                        }
+                      }}
+                    />
+                    {isSubmitting && (
+                      <div className="absolute top-2 right-2 text-brand-600">
+                        <Spinner className="size-4" />
+                      </div>
                     )}
+                  </div>
+                )}
+              </Field>
+            </Form>
+          )}
+        </Formik>
 
-                </Formik>
-                <Comment.Group>
-                    {commentStore.comments.map(comment => (
-                        <Comment key={comment.id}>
-                            <Comment.Avatar src={comment.image || '/assets/user.png'}/>
-                            <Comment.Content>
-                                <Comment.Author as={Link} to={`/profiles/${comment.username}`}>{comment.displayName}</Comment.Author>
-                                <Comment.Metadata>
-                                    <div>{formatDistanceToNow(comment.createdAt, {addSuffix: true})} ago</div>
-                                </Comment.Metadata>
-                                <Comment.Text style={{whiteSpace: 'pre-wrap'}}>{comment.body}</Comment.Text>
-                            </Comment.Content>
-                        </Comment>
-                    ))}
-                </Comment.Group>
-            </Segment>
-        </>
-    )
-})
+        <ul className="mt-6 space-y-5">
+          {commentStore.comments.map((comment) => (
+            <li key={comment.id} className="flex gap-3">
+              <Avatar src={comment.image} alt={comment.displayName} className="size-9 shrink-0" />
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-baseline gap-x-2">
+                  <Link to={`/profiles/${comment.username}`} className="text-sm font-semibold text-slate-900 hover:text-brand-600">
+                    {comment.displayName}
+                  </Link>
+                  <span className="text-xs text-slate-400">
+                    {formatDistanceToNow(comment.createdAt, { addSuffix: true })}
+                  </span>
+                </div>
+                <p className="mt-0.5 text-sm break-words whitespace-pre-wrap text-slate-700">{comment.body}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </Card>
+  );
+});

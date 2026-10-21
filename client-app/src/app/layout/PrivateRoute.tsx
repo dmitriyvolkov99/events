@@ -2,7 +2,7 @@ import { Navigate, useLocation } from "react-router-dom";
 import { useStore } from "../stores/store";
 
 interface Props {
-    children: JSX.Element;
+    children: React.JSX.Element;
 }
 
 export default function PrivateRoute({ children }: Props) {

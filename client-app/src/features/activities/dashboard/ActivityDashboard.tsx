@@ -1,58 +1,59 @@
-import { observer } from 'mobx-react-lite'
-import React, { useEffect, useState } from 'react'
-import InfiniteScroll from 'react-infinite-scroller'
-import { Grid, Loader } from 'semantic-ui-react'
-import { PagingParams } from '../../../app/models/paginations'
-import { useStore } from '../../../app/stores/store'
-import ActivityFilters from './ActivityFilters'
-import ActivityList from './ActivityList'
-import ActivityListItemPlaceholder from './ActivityListItemPlaceholder'
+import { observer } from 'mobx-react-lite';
+import { useEffect, useState } from 'react';
+import { PagingParams } from '../../../app/models/paginations';
+import { useStore } from '../../../app/stores/store';
+import { useInfiniteScroll } from '../../../app/common/hooks/useInfiniteScroll';
+import Spinner from '../../../app/ui/Spinner';
+import ActivityFilters from './ActivityFilters';
+import ActivityList from './ActivityList';
+import ActivityListItemPlaceholder from './ActivityListItemPlaceholder';
 
 const ActivityDashboard = () => {
-    const {activityStore} = useStore();
-    const {loadActivities, activityRegistry, setPagingParams, pagination} = activityStore;
+  const { activityStore } = useStore();
+  const { loadActivities, activityRegistry, setPagingParams, pagination } = activityStore;
 
-    const [loadingNext, setLoadingNext] = useState(false);
+  const [loadingNext, setLoadingNext] = useState(false);
 
-    function handleNext(){
-        setLoadingNext(true);
-        setPagingParams(new PagingParams(pagination!.currentPage + 1))
-        loadActivities().then(() => setLoadingNext(false));
-    }
+  function handleNext() {
+    setLoadingNext(true);
+    setPagingParams(new PagingParams(pagination!.currentPage + 1));
+    loadActivities().then(() => setLoadingNext(false));
+  }
 
-    useEffect(() => {
-        if(activityRegistry.size <= 1) loadActivities();
-    }, [activityRegistry.size, activityStore, loadActivities]);
+  useEffect(() => {
+    if (activityRegistry.size <= 1) loadActivities();
+  }, [activityRegistry.size, activityStore, loadActivities]);
 
-    
-    return (
-        <Grid>
-            <Grid.Column width="10">
-                {activityStore.loadingInitial && !loadingNext ? (
-                    <>
-                        <ActivityListItemPlaceholder />
-                        <ActivityListItemPlaceholder />
-                    </>
-                ) : (
-                    <InfiniteScroll
-                        pageStart={0}
-                        loadMore={handleNext}
-                        hasMore={!loadingNext && !!pagination && pagination.currentPage < pagination.totalPages}
-                        initialLoad={false}
-                    >
-                        <ActivityList  />
-                    </InfiniteScroll>
-                )}
-             
-            </Grid.Column>
-            <Grid.Column width="6">
-                <ActivityFilters />
-            </Grid.Column>  
-            <Grid.Column width={10}>
-                <Loader active={loadingNext} />
-            </Grid.Column>
-        </Grid>
-    )
-}
+  const hasMore = !loadingNext && !!pagination && pagination.currentPage < pagination.totalPages;
+  const sentinelRef = useInfiniteScroll(handleNext, hasMore);
+
+  return (
+    <div className="grid gap-8 lg:grid-cols-3">
+      <section className="lg:col-span-2">
+        {activityStore.loadingInitial && !loadingNext ? (
+          <div className="space-y-4">
+            <ActivityListItemPlaceholder />
+            <ActivityListItemPlaceholder />
+          </div>
+        ) : (
+          <>
+            <ActivityList />
+            <div ref={sentinelRef} className="h-px" />
+          </>
+        )}
+
+        {loadingNext && (
+          <div className="flex justify-center py-6 text-brand-600">
+            <Spinner className="size-6" />
+          </div>
+        )}
+      </section>
+
+      <aside className="lg:sticky lg:top-24 lg:self-start">
+        <ActivityFilters />
+      </aside>
+    </div>
+  );
+};
 
 export default observer(ActivityDashboard);

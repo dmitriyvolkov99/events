@@ -1,33 +1,40 @@
-import { useField } from 'formik'
-import React from 'react'
-import { Form, Label, Select } from 'semantic-ui-react';
+import { useField } from 'formik';
+import { ChevronDown } from 'lucide-react';
+import FormField from './FormField';
+import { fieldClass } from './fieldClass';
 
-interface Props{
-    placeholder: string,
-    name: string,
-    options: any,
-    label?: string
+interface Props {
+  placeholder: string;
+  name: string;
+  options: { text: string; value: string }[];
+  label?: string;
 }
 
-const MySelectInput = (props: Props) => {
-    const [field, meta, helpers] = useField(props.name);
-    return (
-        <Form.Field error={meta.touched && !!meta.error}>
-            <label>{props.label}</label>
-            <Select 
-                clearable 
-                options={props.options}
-                value={field.value || null}
-                onChange={(e, d) => helpers.setValue(d.value)}
-                onBlur={() => helpers.setTouched(true)}
-                placeholder={props.placeholder}
-             />
+const MySelectInput = ({ label, placeholder, options, name }: Props) => {
+  const [field, meta] = useField(name);
+  const hasError = meta.touched && !!meta.error;
 
-            {meta.touched && meta.error ? (
-                <Label basic color='red'>{meta.error}</Label>
-            ) : null}
-        </Form.Field>
-    )
-}
+  return (
+    <FormField id={name} label={label} error={hasError ? meta.error : undefined}>
+      <div className="relative">
+        <select
+          {...field}
+          id={name}
+          value={field.value ?? ''}
+          aria-invalid={hasError}
+          className={`${fieldClass(hasError)} appearance-none pr-9 ${field.value ? '' : 'text-slate-400'}`}
+        >
+          <option value="">{placeholder}</option>
+          {options.map((o) => (
+            <option key={o.value} value={o.value} className="text-slate-900">
+              {o.text}
+            </option>
+          ))}
+        </select>
+        <ChevronDown className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-slate-400" />
+      </div>
+    </FormField>
+  );
+};
 
-export default MySelectInput
+export default MySelectInput;

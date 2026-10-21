@@ -1,38 +1,40 @@
-import React, {useCallback} from 'react'
-import {useDropzone} from 'react-dropzone'
-import { Header, Icon } from 'semantic-ui-react'
+import { useCallback } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { Upload } from 'lucide-react';
+import clsx from 'clsx';
+import type { PreviewFile } from './types';
 
-interface Props{
-  setFiles: (files: any) => void
+interface Props {
+  setFiles: (files: PreviewFile[]) => void;
 }
-export default function PhotoWidgetDropzone({setFiles}: Props) {
-  const dzStyles = {
-    border: 'dashed 3px #eee',
-    borderColor: '#eee',
-    borderRadius: '5px',
-    paddingTop: '30px',
-    textAlign: 'center' as 'center',
-    height: '200'
-  }
 
-  const dzActive = {
-    borderColor: 'green',
-    
-  }
+export default function PhotoWidgetDropzone({ setFiles }: Props) {
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      setFiles(
+        acceptedFiles.map((file) => Object.assign(file, { preview: URL.createObjectURL(file) }))
+      );
+    },
+    [setFiles]
+  );
 
-  const onDrop = useCallback((acceptedFiles: any) => {
-    setFiles(acceptedFiles.map((file:any) => Object.assign(file, {
-      preview: URL.createObjectURL(file)
-    })))
-  }, [setFiles])
-
-  const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { 'image/*': [] },
+    multiple: false,
+  });
 
   return (
-    <div {...getRootProps()} style={isDragActive? {...dzStyles, ...dzActive} : dzStyles}>
+    <div
+      {...getRootProps()}
+      className={clsx(
+        'flex h-[200px] cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed text-center transition-colors',
+        isDragActive ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-slate-300 text-slate-500 hover:border-brand-300'
+      )}
+    >
       <input {...getInputProps()} />
-      <Icon name='upload' size='huge' />
-      <Header content='Drop image here' />
+      <Upload className="size-10" />
+      <p className="text-sm font-medium">Drop image here</p>
     </div>
-  )
+  );
 }

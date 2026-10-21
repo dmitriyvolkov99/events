@@ -1,60 +1,48 @@
-import { makeAutoObservable, runInAction } from "mobx";
-import agent from "../api/agent";
-import { User, UserFormValues } from "../models/user";
-import { store } from "./store";
+import { makeAutoObservable, runInAction } from 'mobx';
+import agent from '../api/agent';
+import { User, UserFormValues } from '../models/user';
+import { store } from './store';
 import { navigate } from '../router';
-export default class UserStore{
-    user: User | null = null;
 
-    constructor() {
-        makeAutoObservable(this);
-    }
+export default class UserStore {
+  user: User | null = null;
 
-    get isLoggedIn(){
-        return !!this.user;
-    }
+  constructor() {
+    makeAutoObservable(this);
+  }
 
-    login = async(creds: UserFormValues) => {
-        try{
-            const user = await agent.Account.login(creds);
-            store.commonStore.setToken(user.token);
-            runInAction(() => this.user = user);
-            navigate('/activities');
-            store.modalStore.closeModal();
-        }catch(error){
-            throw error;
-        }
-    }
+  get isLoggedIn() {
+    return !!this.user;
+  }
 
-    logout = () => {
-        store.commonStore.setToken(null);
-        window.localStorage.removeItem('jwt');
-        this.user = null;
-        navigate('/');
-    }
+  login = (creds: UserFormValues) => this.authenticate(agent.Account.login(creds));
 
-    getUser = async() => {
-        try{
-            const user = await agent.Account.current();
-            runInAction(() => this.user = user);
-        }catch(error){
-            console.log(error)
-        }
-    }
+  register = (creds: UserFormValues) => this.authenticate(agent.Account.register(creds));
 
-    register = async (creds: UserFormValues) => {
-        try{
-            const user = await agent.Account.register(creds);
-            store.commonStore.setToken(user.token);
-            runInAction(() => this.user = user);
-            navigate('/activities');
-            store.modalStore.closeModal();
-        }catch(error){
-            throw error;
-        }
-    }
+  private authenticate = async (request: Promise<User>) => {
+    const user = await request;
+    store.commonStore.setToken(user.token);
+    runInAction(() => (this.user = user));
+    navigate('/activities');
+    store.modalStore.closeModal();
+  };
 
-    setImage = (image: string) =>{
-        if(this.user) this.user.image = image;
+  logout = () => {
+    store.commonStore.setToken(null);
+    this.user = null;
+    navigate('/');
+  };
+
+  getUser = async () => {
+    try {
+      const user = await agent.Account.current();
+      runInAction(() => (this.user = user));
+    } catch (error) {
+      console.log(error);
     }
+  };
+
+  setImage = (image: string) => {
+    if (this.user) this.user.image = image;
+  };
 }

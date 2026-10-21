@@ -1,38 +1,39 @@
-import { observer } from 'mobx-react-lite'
-import React from 'react'
-import { Divider, Grid, Header, Item, Segment, Statistic } from 'semantic-ui-react'
-import { Profile } from '../../app/models/profile'
-import FollowButton from './FollowButton'
+import { observer } from 'mobx-react-lite';
+import { Profile } from '../../app/models/profile';
+import Card from '../../app/ui/Card';
+import Avatar from '../../app/ui/Avatar';
+import FollowButton from './FollowButton';
 
-interface Props{
-    profile: Profile
+interface Props {
+  profile: Profile;
 }
 
-const ProfileHeader = ({profile}: Props) => {
-    return (
-        <Segment>
-            <Grid>
-                <Grid.Column width={12}>
-                    <Item.Group>
-                        <Item>
-                            <Item.Image avatar size='small' src={profile.image || '/assets/user.png'}></Item.Image>
-                            <Item.Content verticalAlign='middle'>
-                                <Header as={"h1"} content={profile.dispayName}></Header>
-                            </Item.Content>
-                        </Item>
-                    </Item.Group>
-                </Grid.Column>
-                <Grid.Column width={4}>
-                    <Statistic.Group widths={2}>
-                        <Statistic label="Followers" value={profile.followersCount}></Statistic>
-                        <Statistic label="Following" value={profile.followingCount}></Statistic>
-                    </Statistic.Group>
-                    <Divider />
-                    <FollowButton profile={profile} />
-                </Grid.Column>
-            </Grid>
-        </Segment>
-    )
-}
+const Stat = ({ label, value }: { label: string; value: number }) => (
+  <div className="text-center">
+    <div className="text-2xl font-bold text-slate-900">{value}</div>
+    <div className="text-xs tracking-wide text-slate-500 uppercase">{label}</div>
+  </div>
+);
 
-export default observer(ProfileHeader)
+const ProfileHeader = ({ profile }: Props) => {
+  return (
+    <Card className="grid gap-6 md:grid-cols-3 md:items-center">
+      <div className="flex items-center gap-5 md:col-span-2">
+        <Avatar src={profile.image} alt={profile.dispayName} className="size-24" />
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900">{profile.dispayName}</h1>
+      </div>
+
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <Stat label="Followers" value={profile.followersCount} />
+          <Stat label="Following" value={profile.followingCount} />
+        </div>
+        <div className="border-t border-slate-100 pt-4">
+          <FollowButton profile={profile} />
+        </div>
+      </div>
+    </Card>
+  );
+};
+
+export default observer(ProfileHeader);

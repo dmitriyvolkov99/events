@@ -1,29 +1,31 @@
-import { observer } from 'mobx-react-lite'
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { Card, Icon, Image } from 'semantic-ui-react'
-import { Profile } from '../../app/models/profile'
-import FollowButton from './FollowButton'
+import { observer } from 'mobx-react-lite';
+import { Link } from 'react-router-dom';
+import { Users } from 'lucide-react';
+import { Profile } from '../../app/models/profile';
+import FollowButton from './FollowButton';
 
-interface Props{
-    profile: Profile
+interface Props {
+  profile: Profile;
 }
 
-const ProfileCard = ({profile}: Props) => {
-    return (
-        <Card as={Link} to={`/profiles/${profile.username}`}>
-            <Image src={profile.image || '/assets/user.png'}></Image>
-            <Card.Content>
-                <Card.Header>{profile.dispayName}</Card.Header>
-                <Card.Description>Bio goes here</Card.Description>
-            </Card.Content>
-            <Card.Content extra>
-                <Icon name='user' />
-                {profile.followersCount} followers
-            </Card.Content>
-            <FollowButton profile={profile} />
-        </Card>
-    )
-}
+const ProfileCard = ({ profile }: Props) => {
+  return (
+    <div className="overflow-hidden rounded-xl bg-white">
+      <Link to={`/profiles/${profile.username}`} className="block">
+        <img
+          src={profile.image || '/assets/user.png'}
+          alt={profile.dispayName}
+          className="aspect-square w-full object-cover"
+        />
+        <p className="px-4 pt-3 pb-2 font-semibold text-slate-900">{profile.dispayName}</p>
+      </Link>
+      <div className="flex items-center gap-1.5 border-t border-slate-100 px-4 py-2.5 text-sm text-slate-600">
+        <Users className="size-4 text-slate-400" />
+        {profile.followersCount} followers
+      </div>
+<div className="p-3 pt-0"><FollowButton profile={profile} /></div>
+    </div>
+  );
+};
 
-export default observer(ProfileCard)
+export default observer(ProfileCard);

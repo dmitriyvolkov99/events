@@ -1,39 +1,53 @@
-import { observer } from 'mobx-react-lite'
-import React from 'react'
-import Calendar from 'react-calendar'
-import { Header, Menu } from 'semantic-ui-react'
-import { useStore } from '../../../app/stores/store'
+import { observer } from 'mobx-react-lite';
+import Calendar from 'react-calendar';
+import { Filter } from 'lucide-react';
+import clsx from 'clsx';
+import { useStore } from '../../../app/stores/store';
+import Card from '../../../app/ui/Card';
+
+const filters = [
+  { key: 'all', label: 'All Events' },
+  { key: 'isGoing', label: "I'm going" },
+  { key: 'isHost', label: "I'm hosting" },
+];
 
 const ActivityFilters = () => {
-    const {activityStore: {predicate, setPredicate}} = useStore();
+  const { activityStore: { predicate, setPredicate } } = useStore();
 
-    return (
-        <>
-            <Menu vertical size="large" style={{width: '100%', marginTop: 25}}>
-                <Header icon='filter' attached color='teal' content='Filters' />
-                <Menu.Item 
-                    content='All Events' 
-                    active={predicate.has('all')}
-                    onClick={() => setPredicate('all', 'true')}
-                />
-                <Menu.Item 
-                    content='`I`m going`' 
-                    active={predicate.has('isGoing')}
-                    onClick={() => setPredicate('isGoing', 'true')}
-                />
-                <Menu.Item 
-                    content='I`m hosting' 
-                    active={predicate.has('isHost')}
-                    onClick={() => setPredicate('isHost', 'true')} 
-                />
-            </Menu>
-            <Header />
-            <Calendar 
-                onChange={date => setPredicate('startDate', date as Date)}
-                value={predicate.get('startDate') || new Date()}
-            />
-        </>
-    )
-}
+  return (
+    <div className="space-y-4">
+      <Card className="p-0">
+        <div className="flex items-center gap-2 border-b border-slate-100 px-5 py-3 text-sm font-semibold text-slate-900">
+          <Filter className="size-4 text-brand-600" />
+          Filters
+        </div>
+        <ul className="p-2">
+          {filters.map(({ key, label }) => (
+            <li key={key}>
+              <button
+                onClick={() => setPredicate(key, 'true')}
+                className={clsx(
+                  'w-full rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors',
+                  predicate.has(key)
+                    ? 'bg-brand-50 text-brand-700'
+                    : 'text-slate-600 hover:bg-slate-50'
+                )}
+              >
+                {label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </Card>
 
-export default observer(ActivityFilters)
+      <Card className="p-2">
+        <Calendar
+          onChange={(date) => setPredicate('startDate', date as Date)}
+          value={predicate.get('startDate') || new Date()}
+        />
+      </Card>
+    </div>
+  );
+};
+
+export default observer(ActivityFilters);

@@ -1,34 +1,22 @@
-import React, { Fragment } from 'react';
-import { Segment, Button, Placeholder } from 'semantic-ui-react';
+import Card from '../../../app/ui/Card';
 
-export default function ActivityListItemPlaceholder() {
-    return (
-        <Fragment>
-            <Placeholder fluid style={{ marginTop: 25 }}>
-                <Segment.Group>
-                    <Segment style={{ minHeight: 110 }}>
-                        <Placeholder>
-                            <Placeholder.Header image>
-                                <Placeholder.Line />
-                                <Placeholder.Line />
-                            </Placeholder.Header>
-                            <Placeholder.Paragraph>
-                                <Placeholder.Line />
-                            </Placeholder.Paragraph>
-                        </Placeholder>
-                    </Segment>
-                    <Segment>
-                        <Placeholder>
-                            <Placeholder.Line />
-                            <Placeholder.Line />
-                        </Placeholder>
-                    </Segment>
-                    <Segment secondary style={{ minHeight: 70 }} />
-                    <Segment clearing>
-                        <Button disabled color='blue' floated='right' content='View' />
-                    </Segment>
-                </Segment.Group>
-            </Placeholder>
-        </Fragment>
-    );
-};
+const ActivityListItemPlaceholder = () => (
+  <Card className="animate-pulse p-0" aria-hidden="true">
+    <div className="flex gap-4 p-5">
+      <div className="size-14 rounded-full bg-slate-200" />
+      <div className="flex-1 space-y-2.5 pt-1">
+        <div className="h-4 w-1/2 rounded bg-slate-200" />
+        <div className="h-3 w-1/3 rounded bg-slate-200" />
+      </div>
+    </div>
+    <div className="border-t border-slate-100 px-5 py-3">
+      <div className="h-3 w-2/3 rounded bg-slate-200" />
+    </div>
+    <div className="flex items-center justify-between border-t border-slate-100 px-5 py-4">
+      <div className="h-3 w-1/2 rounded bg-slate-200" />
+      <div className="h-8 w-16 rounded-lg bg-slate-200" />
+    </div>
+  </Card>
+);
+
+export default ActivityListItemPlaceholder;

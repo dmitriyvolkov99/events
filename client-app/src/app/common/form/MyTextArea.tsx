@@ -1,26 +1,23 @@
-import { useField } from 'formik'
-import React from 'react'
-import { Form, Label } from 'semantic-ui-react';
+import { useField } from 'formik';
+import type { TextareaHTMLAttributes } from 'react';
+import FormField from './FormField';
+import { fieldClass } from './fieldClass';
 
-interface Props{
-    placeholder: string,
-    name: string,
-    rows: number,
-    label?: string
+interface Props extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+  name: string;
+  label?: string;
 }
 
-const MyTextArea = (props: Props) => {
-    const [field, meta] = useField(props.name);
-    return (
-        <Form.Field error={meta.touched && !!meta.error}>
-            <label>{props.label}</label>
-            <textarea {...field} {...props} />
+const MyTextArea = ({ label, ...props }: Props) => {
+  const [field, meta] = useField(props.name);
+  const hasError = meta.touched && !!meta.error;
+  const id = props.id ?? props.name;
 
-            {meta.touched && meta.error ? (
-                <Label basic color='red'>{meta.error}</Label>
-            ) : null}
-        </Form.Field>
-    )
-}
+  return (
+    <FormField id={id} label={label} error={hasError ? meta.error : undefined}>
+      <textarea {...field} {...props} id={id} aria-invalid={hasError} className={fieldClass(hasError)} />
+    </FormField>
+  );
+};
 
-export default MyTextArea
+export default MyTextArea;

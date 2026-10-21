@@ -1,22 +1,21 @@
-import React from 'react'
-import { Message } from 'semantic-ui-react'
+import Alert from '../../app/ui/Alert';
 
-interface Props{
-    errors: any
+interface Props {
+  errors: unknown;
 }
 
-const ValidationErrors = ({errors}: Props) => {
-    return (
-        <Message error>
-            {errors && (
-                <Message.List>
-                    {/* {errors.map((err:any, i:any) => (
-                        <Message.Item key={i}>{err}</Message.Item>
-                    ))} */}
-                </Message.List>
-            )}
-        </Message>
-    )
-}
+export default function ValidationErrors({ errors }: Props) {
+  if (!errors) return null;
 
-export default ValidationErrors
+  const messages = Array.isArray(errors) ? errors : [String(errors)];
+
+  return (
+    <Alert>
+      <ul className="list-disc space-y-1 pl-5">
+        {messages.map((err, i) => (
+          <li key={i}>{String(err)}</li>
+        ))}
+      </ul>
+    </Alert>
+  );
+}

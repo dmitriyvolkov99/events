@@ -1,22 +1,23 @@
 import { observer } from 'mobx-react-lite';
-import React from 'react'
-import { Container, Header, Segment } from 'semantic-ui-react';
 import { useStore } from '../../app/stores/store';
+import Card from '../../app/ui/Card';
 
 const ServerError = () => {
-    const {commonStore} = useStore();
+  const { commonStore } = useStore();
 
-    return (
-        <Container>
-            <Header as='h1' content='Server Error'></Header>
-            <Header sub as='h5' color='red' content={commonStore.error?.message}></Header>
-            {commonStore.error?.details && 
-            <Segment>
-                <Header as='h4' content='Stack Trace' color="teal"></Header>
-                <code style={{marginTop: '10px'}}>{commonStore.error.details}</code>
-            </Segment>}
-        </Container>
-    )
-}
+  return (
+    <div className="mx-auto max-w-3xl">
+      <h1 className="text-3xl font-bold text-slate-900">Server Error</h1>
+      <p className="mt-2 text-sm font-semibold text-red-600">{commonStore.error?.message}</p>
 
-export default observer(ServerError)
+      {commonStore.error?.details && (
+        <Card className="mt-6">
+          <h4 className="text-xs font-semibold tracking-wider text-brand-600 uppercase">Stack Trace</h4>
+          <pre className="mt-3 overflow-x-auto text-xs text-slate-700">{commonStore.error.details}</pre>
+        </Card>
+      )}
+    </div>
+  );
+};
+
+export default observer(ServerError);

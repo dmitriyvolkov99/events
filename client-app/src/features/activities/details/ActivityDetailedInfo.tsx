@@ -1,48 +1,33 @@
 import { format } from 'date-fns';
 import { observer } from 'mobx-react-lite';
-import React from 'react'
-import {Segment, Grid, Icon} from 'semantic-ui-react'
-import {Activity} from "../../../app/models/activity";
+import { Calendar, Info, MapPin } from 'lucide-react';
+import type { ReactNode } from 'react';
+import { Activity } from '../../../app/models/activity';
+import Card from '../../../app/ui/Card';
 
 interface Props {
-    activity: Activity
+  activity: Activity;
 }
 
-export default observer(function ActivityDetailedInfo({activity}: Props) {
-    return (
-        <Segment.Group>
-            <Segment attached='top'>
-                <Grid>
-                    <Grid.Column width={1}>
-                        <Icon size='large' color='teal' name='info'/>
-                    </Grid.Column>
-                    <Grid.Column width={15}>
-                        <p>{activity.description}</p>
-                    </Grid.Column>
-                </Grid>
-            </Segment>
-            <Segment attached>
-                <Grid verticalAlign='middle'>
-                    <Grid.Column width={1}>
-                        <Icon name='calendar' size='large' color='teal'/>
-                    </Grid.Column>
-                    <Grid.Column width={15}>
-                        <span>
-                        {format(activity.date!, 'dd MMM yyyy h:mm aa')}
-                        </span>
-                    </Grid.Column>
-                </Grid>
-            </Segment>
-            <Segment attached>
-                <Grid verticalAlign='middle'>
-                    <Grid.Column width={1}>
-                        <Icon name='marker' size='large' color='teal'/>
-                    </Grid.Column>
-                    <Grid.Column width={11}>
-                        <span>{activity.venue}, {activity.city}</span>
-                    </Grid.Column>
-                </Grid>
-            </Segment>
-        </Segment.Group>
-    )
-})
+function Row({ icon, children }: { icon: ReactNode; children: ReactNode }) {
+  return (
+    <div className="flex items-start gap-4 px-6 py-4">
+      <span className="mt-0.5 text-brand-600">{icon}</span>
+      <div className="text-sm text-slate-700">{children}</div>
+    </div>
+  );
+}
+
+export default observer(function ActivityDetailedInfo({ activity }: Props) {
+  return (
+    <Card className="divide-y divide-slate-100 p-0">
+      <Row icon={<Info className="size-5" />}>
+        <p className="whitespace-pre-wrap">{activity.description}</p>
+      </Row>
+      <Row icon={<Calendar className="size-5" />}>{format(activity.date!, 'dd MMM yyyy h:mm aa')}</Row>
+      <Row icon={<MapPin className="size-5" />}>
+        {activity.venue}, {activity.city}
+      </Row>
+    </Card>
+  );
+});

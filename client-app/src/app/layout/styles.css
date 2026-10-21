@@ -1,40 +1,25 @@
-body{
-  background-color: #eaeaea !important;
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+
+  --color-brand-50: #eef2ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-200: #c7d2fe;
+  --color-brand-300: #a5b4fc;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --color-brand-700: #4338ca;
 }
 
-.ui.inverted.top.fixed.menu{
-  background-image: linear-gradient(135deg, rgb(61, 82, 165) 0%, rgb(32, 55, 63) 69%, rgb(20, 39, 40) 89%) !important;
+@layer base {
+  body {
+    @apply bg-slate-50 font-sans text-slate-900 antialiased;
+  }
 }
 
-.react-calendar{
+.react-calendar {
   width: 100%;
   border: none;
-  box-shadow: 0 1px 2px 0 rgb(34 36 38 / 15%);
-}
-
-.masthead {
-  display: flex;
-  align-items: center;
-  background-image: linear-gradient(
-          135deg,
-          rgb(61, 82, 165) 0%,
-          rgb(32, 55, 63) 69%,
-          rgb(20, 39, 40) 89%
-  ) !important;
-  height: 100vh;
-}
-
-.masthead .ui.menu .ui.button,
-.ui.menu a.ui.inverted.button {
-  margin-left: 0.5em;
-}
-
-.masthead h1.ui.header {
-  font-size: 4em;
-  font-weight: normal;
-}
-
-.masthead h2 {
-  font-size: 1.7em;
-  font-weight: normal;
+  box-shadow: none;
 }

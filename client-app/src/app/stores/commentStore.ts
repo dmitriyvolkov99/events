@@ -13,8 +13,8 @@ export default class CommentStore{
 
     createHubConnection = (activityId: string) => {
         if(store.activityStore.selectedActivity){
-            this.hubConnection = new HubConnectionBuilder().withUrl(process.env.REACT_APP_CHAT_URL + "?activityId=" + activityId, {
-                accessTokenFactory: () => store.userStore.user?.token!
+            this.hubConnection = new HubConnectionBuilder().withUrl(import.meta.env.VITE_CHAT_URL + "?activityId=" + activityId, {
+                accessTokenFactory: () => store.commonStore.token ?? '',
             }).withAutomaticReconnect().configureLogging(LogLevel.Information).build();
 
             this.hubConnection.start().catch(error => console.log("Error establishing the connection: ", error));
@@ -46,12 +46,14 @@ export default class CommentStore{
         this.stopHubConnection();
     }
 
-    addComment = async (values: any) => {
-        values.activityId = store.activityStore.selectedActivity?.id;
-        try{
-            await this.hubConnection?.invoke('SendComment', values);
-        }catch(error){
-
-        }
-    }
+addComment = async (values: { body: string }) => {
+  try {
+    await this.hubConnection?.invoke('SendComment', {
+      ...values,
+      activityId: store.activityStore.selectedActivity?.id,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
 }

@@ -1,26 +1,23 @@
-import { useField } from 'formik'
-import React from 'react'
-import { Form, Label } from 'semantic-ui-react';
+import { useField } from 'formik';
+import type { InputHTMLAttributes } from 'react';
+import FormField from './FormField';
+import { fieldClass } from './fieldClass';
 
-interface Props{
-    placeholder: string,
-    name: string,
-    type?: string,
-    label?: string
+interface Props extends InputHTMLAttributes<HTMLInputElement> {
+  name: string;
+  label?: string;
 }
 
-const MyTextInput = (props: Props) => {
-    const [field, meta] = useField(props.name);
-    return (
-        <Form.Field error={meta.touched && !!meta.error}>
-            <label>{props.label}</label>
-            <input {...field} {...props} />
+const MyTextInput = ({ label, ...props }: Props) => {
+  const [field, meta] = useField(props.name);
+  const hasError = meta.touched && !!meta.error;
+  const id = props.id ?? props.name;
 
-            {meta.touched && meta.error ? (
-                <Label basic color='red'>{meta.error}</Label>
-            ) : null}
-        </Form.Field>
-    )
-}
+  return (
+    <FormField id={id} label={label} error={hasError ? meta.error : undefined}>
+      <input {...field} {...props} id={id} aria-invalid={hasError} className={fieldClass(hasError)} />
+    </FormField>
+  );
+};
 
-export default MyTextInput
+export default MyTextInput;
