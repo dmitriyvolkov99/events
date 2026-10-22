@@ -24,7 +24,7 @@ export default observer(function ActivityDetailedInfo({ activity }: Props) {
       <Row icon={<Info className="size-5" />}>
         <p className="whitespace-pre-wrap">{activity.description}</p>
       </Row>
-      <Row icon={<Calendar className="size-5" />}>{format(activity.date!, 'dd MMM yyyy h:mm aa')}</Row>
+      <Row icon={<Calendar className="size-5" />}>{format(activity.date, 'dd MMM yyyy h:mm aa')}</Row>
       <Row icon={<MapPin className="size-5" />}>
         {activity.venue}, {activity.city}
       </Row>

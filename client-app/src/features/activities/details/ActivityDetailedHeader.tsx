@@ -32,7 +32,7 @@ export default observer(function ActivityDetailedHeader({ activity }: Props) {
 
         <div className="absolute inset-x-0 bottom-0 p-6 text-white">
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{activity.title}</h1>
-          <p className="mt-1 text-sm text-slate-200">{format(activity.date!, 'dd MMM yyyy')}</p>
+          <p className="mt-1 text-sm text-slate-200">{format(activity.date, 'dd MMM yyyy')}</p>
           <p className="text-sm text-slate-200">
             Hosted by{' '}
             <Link to={`/profiles/${activity.host?.username}`} className="font-semibold text-white underline-offset-2 hover:underline">

@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
-import { v4 as uuid } from 'uuid';
 import LoadingComponent from '../../../app/layout/LoadingComponent';
 import { ActivityFormValues } from '../../../app/models/activity';
 import { useStore } from '../../../app/stores/store';
@@ -43,7 +42,7 @@ async function handleFormSubmit(values: ActivityFormValues) {
       await updateActivity(values);
       navigate(`/activities/${values.id}`);
     } else {
-      const id = uuid();
+      const id = crypto.randomUUID();
       await createActivity({ ...values, id });
       navigate(`/activities/${id}`);
     }

@@ -4,20 +4,23 @@ import { CalendarDays, Filter } from 'lucide-react';
 import { cn } from '../../../app/ui/cn';
 import { useStore } from '../../../app/stores/store';
 import Card from '../../../app/ui/Card';
+import type { ActivityFilter } from '../../../app/stores/activityStore';
 
-const filters = [
+const filters: { key: ActivityFilter; label: string }[] = [
   { key: 'all', label: 'All Events' },
   { key: 'isGoing', label: "I'm going" },
   { key: 'isHost', label: "I'm hosting" },
 ];
 
 const ActivityFilters = () => {
-  const { activityStore: { predicate, setPredicate } } = useStore();
+  const { activityStore: { filter, startDate, setFilter, setStartDate } } = useStore();
 
   const calendar = (
     <Calendar
-      onChange={(date) => setPredicate('startDate', date as Date)}
-      value={predicate.get('startDate') || new Date()}
+      onChange={(value) => {
+        if (value instanceof Date) setStartDate(value);
+      }}
+      value={startDate ?? new Date()}
     />
   );
 
@@ -32,10 +35,10 @@ const ActivityFilters = () => {
           {filters.map(({ key, label }) => (
             <li key={key} className="shrink-0 lg:shrink">
               <button
-                onClick={() => setPredicate(key, 'true')}
+                onClick={() => setFilter(key)}
                 className={cn(
                   'w-full rounded-lg px-3 py-2 text-left text-sm font-medium whitespace-nowrap transition-colors',
-                  predicate.has(key) ? 'bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-300' : 'text-slate-600 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-zinc-800'
+                  filter === key ? 'bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-300' : 'text-slate-600 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-zinc-800'
                 )}
               >
                 {label}

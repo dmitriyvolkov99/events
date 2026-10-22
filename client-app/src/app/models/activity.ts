@@ -3,7 +3,7 @@ import { Profile } from './profile';
 export class Activity {
   id!: string;
   title = '';
-  date: Date | null = null;
+  date!: Date;
   description = '';
   category = '';
   city = '';

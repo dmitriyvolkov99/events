@@ -45,7 +45,7 @@ const ActivityListItem = ({ activity }: Props) => {
       <div className="flex flex-wrap items-center gap-x-6 gap-y-1 border-t border-slate-100 dark:border-zinc-800 px-5 py-3 text-sm text-slate-600 dark:text-zinc-400">
         <span className="inline-flex items-center gap-1.5">
           <Clock className="size-4 text-slate-400" />
-          {format(activity.date!, 'dd MMM yyyy h:mm aa')}
+          {format(activity.date, 'dd MMM yyyy h:mm aa')}
         </span>
         <span className="inline-flex items-center gap-1.5">
           <MapPin className="size-4 text-slate-400" />
@@ -54,7 +54,7 @@ const ActivityListItem = ({ activity }: Props) => {
       </div>
 
       <div className="border-t border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-800/50 px-5 py-3">
-        <ActivityListItemAttendee attendees={activity.attendees!} />
+        <ActivityListItemAttendee attendees={activity.attendees} />
       </div>
 
       <div className="flex items-center justify-between gap-4 border-t border-slate-100 dark:border-zinc-800 px-5 py-4">

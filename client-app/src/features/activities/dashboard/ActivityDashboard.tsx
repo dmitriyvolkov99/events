@@ -15,8 +15,10 @@ const ActivityDashboard = () => {
   const [loadingNext, setLoadingNext] = useState(false);
 
   function handleNext() {
+    if (!pagination) return;
+    
     setLoadingNext(true);
-    setPagingParams(new PagingParams(pagination!.currentPage + 1));
+    setPagingParams(new PagingParams(pagination.currentPage + 1));
     loadActivities().then(() => setLoadingNext(false));
   }
 

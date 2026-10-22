@@ -1,10 +1,12 @@
 import { format } from "date-fns";
-import { makeAutoObservable, reaction, runInAction } from "mobx";
+import { comparer, makeAutoObservable, reaction, runInAction } from "mobx";
 import agent from "../api/agent";
 import { Activity, ActivityFormValues } from "../models/activity";
 import { Pagination, PagingParams } from "../models/paginations";
 import { Profile } from "../models/profile";
 import { store } from "./store";
+
+export type ActivityFilter = 'all' | 'isGoing' | 'isHost';
 
 export default class ActivityStore{
     activityRegistry = new Map<string, Activity>();
@@ -15,71 +17,53 @@ export default class ActivityStore{
 
     pagination: Pagination | null = null;
     pagingParams = new PagingParams();
-    predicate = new Map().set('all',true);
+    filter: ActivityFilter = 'all';
+    startDate: Date | undefined = undefined;
 
-    constructor(){
+    constructor() {
         makeAutoObservable(this);
 
         reaction(
-            () => this.predicate.keys(),
+            () => [this.filter, this.startDate?.getTime()],
             () => {
                 this.pagingParams = new PagingParams();
                 this.activityRegistry.clear();
                 this.loadActivities();
-            }
-        )
+            },
+            { equals: comparer.structural }
+        );
     }
 
-    setPredicate = (predicate: string, value: string | Date) => {
-        const resetPredicate = () => {
-            this.predicate.forEach((value, key) => {
-                if(key !== 'startDate') this.predicate.delete(key);
-            })
-        }
-        switch(predicate){
-            case 'all':
-                resetPredicate();
-                this.predicate.set('all', true);
-                break;
-            case 'isGoing':
-                resetPredicate();
-                this.predicate.set('isGoing', true);
-                break;
-            case 'isHost':
-                resetPredicate();
-                this.predicate.set('isHost', true);
-                break;
-            case 'startDate':
-                this.predicate.delete('startDate');
-                this.predicate.set('startDate', value);
-        }
-    }
+    setFilter = (filter: ActivityFilter) => {
+        this.filter = filter;
+    };
+
+    setStartDate = (date: Date) => {
+        this.startDate = date;
+    };
 
     get activitiesByDate(){
-        return Array.from(this.activityRegistry.values()).sort((a, b) => a.date!.getTime() - b.date!.getTime());
+        return Array.from(this.activityRegistry.values()).sort((a, b) => a.date.getTime() - b.date.getTime());
     }
 
     get groupedActivities(){
         return Object.entries(
             this.activitiesByDate.reduce((activities, activity) => {
-                const date = format(activity.date!, 'dd MMM yyyy');
+                const date = format(activity.date, 'dd MMM yyyy');
                 activities[date] = activities[date] ? [...activities[date], activity] : [activity];
                 return activities;
             },{} as {[key: string]: Activity[]})
         )
     }
 
-    get axiosParams(){
+    get axiosParams() {
         const params = new URLSearchParams();
         params.append('pageNumber', this.pagingParams.pageNumber.toString());
         params.append('pageSize', this.pagingParams.pageSize.toString());
-        this.predicate.forEach((value, key) => {
-            if(key === 'startDate'){
-                params.append(key, (value as Date).toISOString());
-            }else{
-                params.append(key, value);
-            }
-        })
+        params.append(this.filter, 'true');
+
+        if (this.startDate) params.append('startDate', this.startDate.toISOString());
+        
         return params;
     }
 
@@ -136,11 +120,11 @@ loadActivity = async (id: string) => {
         const user = store.userStore.user;
 
         if(user){
-            activity.isGoing = activity.attendees!.some(a => a.username === user.username)
+            activity.isGoing = activity.attendees.some(a => a.username === user.username)
             activity.isHost = activity.hostUsername === user.username;
-            activity.host = activity.attendees!.find(x => x.username === activity.hostUsername);
+            activity.host = activity.attendees.find(x => x.username === activity.hostUsername);
         }
-        activity.date = new Date(activity.date!);
+        activity.date = new Date(activity.date);
         this.activityRegistry.set(activity.id, activity);
     }
 
