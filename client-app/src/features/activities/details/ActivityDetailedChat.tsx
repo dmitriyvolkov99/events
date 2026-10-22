@@ -69,14 +69,14 @@ export default observer(function ActivityDetailedChat({ activityId }: Props) {
               <Avatar src={comment.image} alt={comment.displayName} className="size-9 shrink-0" />
               <div className="min-w-0">
                 <div className="flex flex-wrap items-baseline gap-x-2">
-                  <Link to={`/profiles/${comment.username}`} className="text-sm font-semibold text-slate-900 hover:text-brand-600">
+                  <Link to={`/profiles/${comment.username}`} className="text-sm font-semibold text-slate-900 dark:text-zinc-100 hover:text-brand-600">
                     {comment.displayName}
                   </Link>
                   <span className="text-xs text-slate-400">
                     {formatDistanceToNow(comment.createdAt, { addSuffix: true })}
                   </span>
                 </div>
-                <p className="mt-0.5 text-sm break-words whitespace-pre-wrap text-slate-700">{comment.body}</p>
+                <p className="mt-0.5 text-sm break-words whitespace-pre-wrap text-slate-700 dark:text-zinc-300">{comment.body}</p>
               </div>
             </li>
           ))}

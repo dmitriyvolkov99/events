@@ -21,7 +21,7 @@ const RegisterForm = () => {
     >
       {({ handleSubmit, isSubmitting, errors, isValid, dirty }) => (
         <Form onSubmit={handleSubmit} autoComplete="off">
-          <h2 className="mb-6 text-center text-2xl font-bold text-slate-900">Sign up to Events</h2>
+          <h2 className="mb-6 text-center text-2xl font-bold text-slate-900 dark:text-zinc-100">Sign up to Events</h2>
           <MyTextInput name="dispayName" placeholder="Display Name" />
           <MyTextInput name="username" placeholder="Username" />
           <MyTextInput name="email" placeholder="Email" />

@@ -23,7 +23,7 @@ const ActivityListItemAttendee = ({ attendees }: Props) => {
           </Link>
 
           <div className="invisible absolute top-full left-0 z-30 pt-2 opacity-0 transition-opacity group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
-            <div className="w-56 rounded-xl bg-white shadow-lg ring-1 ring-slate-200">
+            <div className="w-56 rounded-xl  bg-white dark:bg-zinc-900 shadow-lg ring-1 ring-slate-200 dark:ring-zinc-800">
               <ProfileCard profile={attendee} />
             </div>
           </div>

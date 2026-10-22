@@ -42,7 +42,7 @@ export default observer(function ActivityDetailedHeader({ activity }: Props) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-3 border-t border-slate-100 px-6 py-4">
+      <div className="flex items-center justify-between gap-3 border-t border-slate-100 dark:border-zinc-800 px-6 py-4">
         {activity.isHost ? (
           <>
             <Button
@@ -54,7 +54,7 @@ export default observer(function ActivityDetailedHeader({ activity }: Props) {
             </Button>
 
             {activity.isCancelled ? (
-              <span aria-disabled="true" className="cursor-not-allowed rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-400">
+              <span aria-disabled="true" className="cursor-not-allowed rounded-lg bg-slate-100 dark:bg-zinc-800 px-4 py-2 text-sm font-medium text-slate-400">
                 Manage Event
               </span>
             ) : (

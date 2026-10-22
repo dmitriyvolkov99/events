@@ -29,7 +29,7 @@ export default function PhotoWidgetDropzone({ setFiles }: Props) {
       {...getRootProps()}
       className={clsx(
         'flex h-[200px] cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed text-center transition-colors',
-        isDragActive ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-slate-300 text-slate-500 hover:border-brand-300'
+        isDragActive ? 'border-brand-500 bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-300' : 'border-slate-300 text-slate-500 dark:text-zinc-400 hover:border-brand-300'
       )}
     >
       <input {...getInputProps()} />

@@ -16,7 +16,7 @@ const LoginForm = () => {
     >
       {({ handleSubmit, isSubmitting, errors }) => (
         <Form onSubmit={handleSubmit} autoComplete="off">
-          <h2 className="mb-6 text-center text-2xl font-bold text-slate-900">Log in to Events</h2>
+          <h2 className="mb-6 text-center text-2xl font-bold text-slate-900 dark:text-zinc-100">Log in to Events</h2>
           <MyTextInput name="email" placeholder="Email" />
           <MyTextInput name="password" placeholder="Password" type="password" />
           <ErrorMessage name="error" render={() => <Alert>{errors.error}</Alert>} />

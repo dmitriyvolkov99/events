@@ -5,7 +5,7 @@ export default function Card({ className, ...rest }: HTMLAttributes<HTMLDivEleme
   return (
     <div
       {...rest}
-      className={cn('rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200', className)}
+      className={cn('rounded-2xl  bg-white dark:bg-zinc-900 p-5 shadow-sm ring-1 ring-slate-200 dark:ring-zinc-800', className)}
     />
   );
 }

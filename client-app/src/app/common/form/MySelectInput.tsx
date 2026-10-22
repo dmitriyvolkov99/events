@@ -26,7 +26,7 @@ const MySelectInput = ({ label, placeholder, options, name }: Props) => {
         >
           <option value="">{placeholder}</option>
           {options.map((o) => (
-            <option key={o.value} value={o.value} className="text-slate-900">
+            <option key={o.value} value={o.value} className="text-slate-900 dark:text-zinc-100">
               {o.text}
             </option>
           ))}

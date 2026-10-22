@@ -11,7 +11,7 @@ const LoadingComponent = ({ inverted = true, content = 'Loading...' }: Props) =>
     <div
       className={clsx(
         'fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 backdrop-blur-sm',
-        inverted ? 'bg-white/80 text-slate-700' : 'bg-slate-900/70 text-white'
+        inverted ? 'bg-white/80 text-slate-700 dark:bg-zinc-950/80' : 'bg-slate-900/70 text-white'
       )}
     >
       <Spinner className="size-8" />

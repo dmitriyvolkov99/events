@@ -24,7 +24,7 @@ const ActivityFilters = () => {
   return (
     <div className="space-y-4">
       <Card className="p-0">
-        <div className="hidden items-center gap-2 border-b border-slate-100 px-5 py-3 text-sm font-semibold text-slate-900 lg:flex">
+        <div className="hidden items-center gap-2 border-b border-slate-100 dark:border-zinc-800 px-5 py-3 text-sm font-semibold text-slate-900 dark:text-zinc-100 lg:flex">
           <Filter className="size-4 text-brand-600" />
           Filters
         </div>
@@ -35,7 +35,7 @@ const ActivityFilters = () => {
                 onClick={() => setPredicate(key, 'true')}
                 className={cn(
                   'w-full rounded-lg px-3 py-2 text-left text-sm font-medium whitespace-nowrap transition-colors',
-                  predicate.has(key) ? 'bg-brand-50 text-brand-700' : 'text-slate-600 hover:bg-slate-50'
+                  predicate.has(key) ? 'bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-300' : 'text-slate-600 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-zinc-800'
                 )}
               >
                 {label}
@@ -46,8 +46,8 @@ const ActivityFilters = () => {
       </Card>
 
       {/* телефон: календарь под спойлером */}
-      <details className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 lg:hidden">
-        <summary className="flex cursor-pointer items-center gap-2 px-5 py-3 text-sm font-medium text-slate-700">
+      <details className="rounded-2xl  bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-slate-200 dark:ring-zinc-800 lg:hidden">
+        <summary className="flex cursor-pointer items-center gap-2 px-5 py-3 text-sm font-medium text-slate-700 dark:text-zinc-300">
           <CalendarDays className="size-4 text-brand-600" />
           Pick a date
         </summary>

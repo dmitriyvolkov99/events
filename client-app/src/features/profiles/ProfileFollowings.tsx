@@ -10,7 +10,7 @@ const ProfileFollowings = () => {
 
   return (
     <Panel loading={loadingFollowings}>
-      <h3 className="mb-5 flex items-center gap-2 text-lg font-semibold text-slate-900">
+      <h3 className="mb-5 flex items-center gap-2 text-lg font-semibold text-slate-900 dark:text-zinc-100">
         <Users className="size-5 text-brand-600" />
         {activeTab === 3
           ? `People following ${profile?.dispayName}`
@@ -18,11 +18,11 @@ const ProfileFollowings = () => {
       </h3>
 
       {followings.length === 0 && !loadingFollowings ? (
-        <p className="text-sm text-slate-500">Nobody here yet.</p>
+        <p className="text-sm text-slate-500 dark:text-zinc-400">Nobody here yet.</p>
       ) : (
         <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {followings.map((p) => (
-            <li key={p.username} className="rounded-xl shadow-sm ring-1 ring-slate-200">
+            <li key={p.username} className="rounded-xl shadow-sm ring-1 ring-slate-200 dark:ring-zinc-800">
               <ProfileCard profile={p} />
             </li>
           ))}

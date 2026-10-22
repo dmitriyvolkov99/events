@@ -56,7 +56,7 @@ async function handleFormSubmit(values: ActivityFormValues) {
 
   return (
     <Card className="mx-auto max-w-2xl">
-      <h2 className="mb-6 text-xl font-semibold text-slate-900">{id ? 'Edit event' : 'Create event'}</h2>
+      <h2 className="mb-6 text-xl font-semibold text-slate-900 dark:text-zinc-100">{id ? 'Edit event' : 'Create event'}</h2>
 
       <Formik
         validationSchema={validationSchema}
@@ -84,7 +84,7 @@ async function handleFormSubmit(values: ActivityFormValues) {
             <div className="mt-6 flex justify-end gap-3">
               <Link
                 to="/activities"
-                className="inline-flex items-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-slate-700 ring-1 ring-slate-300 transition-colors hover:bg-slate-50"
+                className="inline-flex items-center rounded-lg  bg-white dark:bg-zinc-900 px-4 py-2 text-sm font-medium text-slate-700 dark:text-zinc-300 ring-1 ring-slate-300 dark:ring-zinc-700 transition-colors hover:bg-slate-50 dark:hover:bg-zinc-800"
               >
                 Cancel
               </Link>

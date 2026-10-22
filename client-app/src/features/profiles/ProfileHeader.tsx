@@ -10,8 +10,8 @@ interface Props {
 
 const Stat = ({ label, value }: { label: string; value: number }) => (
   <div className="text-center">
-    <div className="text-2xl font-bold text-slate-900">{value}</div>
-    <div className="text-xs tracking-wide text-slate-500 uppercase">{label}</div>
+    <div className="text-2xl font-bold text-slate-900 dark:text-zinc-100">{value}</div>
+    <div className="text-xs tracking-wide text-slate-500 dark:text-zinc-400 uppercase">{label}</div>
   </div>
 );
 
@@ -20,7 +20,7 @@ const ProfileHeader = ({ profile }: Props) => {
     <Card className="grid gap-6 md:grid-cols-3 md:items-center">
       <div className="flex items-center gap-5 md:col-span-2">
         <Avatar src={profile.image} alt={profile.dispayName} className="size-20 sm:size-24" />
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">{profile.dispayName}</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-zinc-100">{profile.dispayName}</h1>
       </div>
 
       <div className="space-y-4">
@@ -28,7 +28,7 @@ const ProfileHeader = ({ profile }: Props) => {
           <Stat label="Followers" value={profile.followersCount} />
           <Stat label="Following" value={profile.followingCount} />
         </div>
-        <div className="border-t border-slate-100 pt-4">
+        <div className="border-t border-slate-100 dark:border-zinc-800 pt-4">
           <FollowButton profile={profile} />
         </div>
       </div>

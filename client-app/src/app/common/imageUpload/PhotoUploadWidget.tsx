@@ -46,7 +46,7 @@ useEffect(() => {
         <h4 className={stepTitle}>Step 3 - Preview &amp; Upload</h4>
         {files && files.length > 0 && (
           <>
-            <div className="img-preview min-h-[200px] overflow-hidden rounded-lg bg-slate-100" />
+            <div className="img-preview min-h-[200px] overflow-hidden rounded-lg bg-slate-100 dark:bg-zinc-800" />
             <div className="mt-3 flex gap-2">
               <Button aria-label="Upload" loading={loading} onClick={onCrop}>
                 <Check className="size-4" />

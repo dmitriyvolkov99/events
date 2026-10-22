@@ -18,11 +18,11 @@ const ProfileContent = ({ profile }: Props) => {
 
   return (
     <TabGroup key={profile.username} onChange={(index) => profileStore.setActiveTab(index)}>
-      <TabList className="mb-4 flex gap-1 overflow-x-auto rounded-xl bg-slate-100 p-1">
+      <TabList className="mb-4 flex gap-1 overflow-x-auto rounded-xl bg-slate-100 dark:bg-zinc-800 p-1">
         {tabs.map((tab) => (
           <Tab
             key={tab}
-            className="rounded-lg px-4 py-2 text-sm font-medium whitespace-nowrap text-slate-600 focus:outline-none data-focus:outline-2 data-focus:outline-brand-500 data-hover:text-slate-900 data-selected:bg-white data-selected:text-brand-700 data-selected:shadow-sm"
+            className="rounded-lg px-4 py-2 text-sm font-medium whitespace-nowrap text-slate-600 dark:text-zinc-400 focus:outline-none data-focus:outline-2 data-focus:outline-brand-500 data-hover:text-slate-900 dark:data-hover:text-zinc-100 data-selected:bg-white dark:data-selected:bg-zinc-700 data-selected:text-brand-700 dark:data-selected:text-brand-300 data-selected:shadow-sm"
           >
             {tab}
           </Tab>

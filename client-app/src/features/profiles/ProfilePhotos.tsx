@@ -34,7 +34,7 @@ const ProfilePhotos = ({ profile }: Props) => {
   return (
     <Panel>
       <div className="mb-5 flex items-center justify-between">
-        <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-900">
+        <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-900 dark:text-zinc-100">
           <ImageIcon className="size-5 text-brand-600" /> Photos
         </h3>
         {isCurrentUser && (
@@ -49,7 +49,7 @@ const ProfilePhotos = ({ profile }: Props) => {
       ) : profile.photos?.length ? (
         <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
           {profile.photos.map((photo) => (
-            <li key={photo.id} className="overflow-hidden rounded-xl ring-1 ring-slate-200">
+            <li key={photo.id} className="overflow-hidden rounded-xl ring-1 ring-slate-200 dark:ring-zinc-800">
               <div className="relative">
                 <img src={photo.url} alt="" className="aspect-square w-full object-cover" />
                 {photo.isMain && (
@@ -87,7 +87,7 @@ const ProfilePhotos = ({ profile }: Props) => {
           ))}
         </ul>
       ) : (
-        <p className="text-sm text-slate-500">No photos yet.</p>
+        <p className="text-sm text-slate-500 dark:text-zinc-400">No photos yet.</p>
       )}
     </Panel>
   );
