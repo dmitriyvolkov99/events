@@ -56,6 +56,7 @@ async function handleFormSubmit(values: ActivityFormValues) {
 
   return (
     <Card className="mx-auto max-w-2xl">
+      <title>{id ? 'Edit event - Events' : 'Create event - Events'}</title>
       <h2 className="mb-6 text-xl font-semibold text-slate-900 dark:text-zinc-100">{id ? 'Edit event' : 'Create event'}</h2>
 
       <Formik

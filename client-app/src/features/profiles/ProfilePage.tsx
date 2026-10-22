@@ -22,6 +22,7 @@ const ProfilePage = () => {
     <div className="space-y-6">
       {profile && (
         <>
+          <title>{`${profile.dispayName} - Events`}</title>
           <ProfileHeader profile={profile} />
           <ProfileContent profile={profile} />
         </>

@@ -104,3 +104,9 @@
 .dark .react-datepicker__triangle::after {
   border-bottom-color: #27272a !important;
 }
+
+
+.dark .Toastify__toast-theme--light {
+  --toastify-color-light: #18181b;
+  --toastify-text-color-light: #f4f4f5;
+}

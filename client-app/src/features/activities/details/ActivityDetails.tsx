@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import LoadingComponent from '../../../app/layout/LoadingComponent';
 import { useStore } from '../../../app/stores/store';
 import ActivityDetailedChat from './ActivityDetailedChat';
@@ -23,6 +23,7 @@ const ActivityDetails = () => {
 
   return (
     <div className="grid gap-8 lg:grid-cols-3">
+      <title>{`${activity.title} - Events`}</title>
       <div className="space-y-6 lg:col-span-2">
         <ActivityDetailedHeader activity={activity} />
         <ActivityDetailedInfo activity={activity} />

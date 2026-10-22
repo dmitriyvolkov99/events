@@ -49,7 +49,7 @@ axios.interceptors.response.use(
         }
         break;
       case 401:
-        toast.error('unauthorized');
+        toast.error('Please log in to continue');
         break;
       case 404:
         navigate('/not-found');
