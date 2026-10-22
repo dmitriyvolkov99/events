@@ -2,7 +2,7 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import agent from '../api/agent';
 import { User, UserFormValues } from '../models/user';
 import { store } from './store';
-import { navigate } from '../router';
+import { router } from '../routes';
 
 export default class UserStore {
   user: User | null = null;
@@ -23,14 +23,14 @@ export default class UserStore {
     const user = await request;
     store.commonStore.setToken(user.token);
     runInAction(() => (this.user = user));
-    navigate('/activities');
+    router.navigate('/activities');
     store.modalStore.closeModal();
   };
 
   logout = () => {
     store.commonStore.setToken(null);
     this.user = null;
-    navigate('/');
+    router.navigate('/');
   };
 
   getUser = async () => {

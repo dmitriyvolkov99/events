@@ -5,7 +5,7 @@ import { store } from '../stores/store';
 import { User, UserFormValues } from '../models/user';
 import { Photo, Profile, UserActivity } from '../models/profile';
 import { PaginatedResult } from '../models/paginations';
-import { navigate } from '../router';
+import { router } from '../routes';
 import { ServerError } from '../models/serverError';
 
 const sleep = (delay: number) => new Promise<void>((resolve) => setTimeout(resolve, delay));
@@ -41,7 +41,7 @@ axios.interceptors.response.use(
         } else if (data && typeof data === 'object') {
           const typedData = data as { errors?: Record<string, string[]> };
 
-          if (config?.method === 'get' && typedData.errors?.id) navigate('/not-found');
+          if (config?.method === 'get' && typedData.errors?.id) router.navigate('/not-found');
 
           if (typedData.errors) {
             return Promise.reject(Object.values(typedData.errors).flat());
@@ -52,11 +52,11 @@ axios.interceptors.response.use(
         toast.error('Please log in to continue');
         break;
       case 404:
-        navigate('/not-found');
+        router.navigate('/not-found');
         break;
       case 500:
         store.commonStore.setServerError(data as ServerError);
-        navigate('/server-error');
+        router.navigate('/server-error');
         break;
     }
 

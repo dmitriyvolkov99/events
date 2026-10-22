@@ -1,13 +1,12 @@
-import { Navigate, useLocation } from "react-router-dom";
-import { useStore } from "../stores/store";
+import { observer } from 'mobx-react-lite';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { useStore } from '../stores/store';
 
-interface Props {
-    children: React.JSX.Element;
+function PrivateRoute() {
+  const { userStore: { isLoggedIn } } = useStore();
+  const location = useLocation();
+
+  return isLoggedIn ? <Outlet /> : <Navigate to="/" state={{ from: location }} replace />;
 }
 
-export default function PrivateRoute({ children }: Props) {
-    const { userStore: { isLoggedIn } } = useStore();
-    const location = useLocation();
-
-    return isLoggedIn ? children : <Navigate to="/" state={{ from: location }} replace />;
-}
+export default observer(PrivateRoute);
