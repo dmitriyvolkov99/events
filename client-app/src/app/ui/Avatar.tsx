@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import { cn } from './cn';
 
 interface Props {
   src?: string | null;
@@ -11,7 +11,7 @@ export default function Avatar({ src, alt, className }: Props) {
     <img
       src={src || '/assets/placeholder.png'}
       alt={alt}
-      className={clsx('size-10 rounded-full object-cover ', className)}
+      className={cn('size-10 rounded-full object-cover ', className)}
     />
   );
 }

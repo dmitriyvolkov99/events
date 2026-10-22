@@ -49,7 +49,7 @@ const ActivityDashboard = () => {
         )}
       </section>
 
-      <aside className="lg:sticky lg:top-24 lg:self-start">
+      <aside className="order-first lg:order-none lg:sticky lg:top-24 lg:self-start">
         <ActivityFilters />
       </aside>
     </div>

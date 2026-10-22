@@ -13,8 +13,8 @@ const HomePage = () => {
   return (
     <section className="flex min-h-screen items-center bg-gradient-to-br from-brand-700 via-slate-900 to-slate-950 text-center text-white">
       <div className="mx-auto max-w-2xl px-4">
-        <img src="/assets/logo.png" alt="logo" className="mx-auto mb-4 size-28" />
-        <h1 className="text-6xl font-bold tracking-tight">Events</h1>
+        <img src="/assets/logo.png" alt="logo" className="mx-auto mb-4 size-24 sm:size-28" />
+        <h1 className="text-5xl font-bold tracking-tight sm:text-6xl">Events</h1>
 
         {userStore.isLoggedIn ? (
           <>

@@ -1,10 +1,11 @@
-import React from 'react'
 import { Cropper } from 'react-cropper'
 import 'cropperjs/dist/cropper.css';
+
 interface Props{
     imagePreview: string,
     setCropper: (cropper: Cropper) => void
 }
+
 const PhotoWidgetCropper = ({imagePreview, setCropper}: Props) => {
     return (
         <Cropper 

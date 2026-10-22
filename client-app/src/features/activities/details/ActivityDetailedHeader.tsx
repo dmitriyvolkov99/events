@@ -20,7 +20,7 @@ export default observer(function ActivityDetailedHeader({ activity }: Props) {
         <img
           src={`/assets/categoryImages/${activity.category}.jpg`}
           alt={activity.category}
-          className="h-64 w-full object-cover"
+          className="h-48 sm:h-64 w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/85 via-slate-900/30 to-transparent" />
 
@@ -31,7 +31,7 @@ export default observer(function ActivityDetailedHeader({ activity }: Props) {
         )}
 
         <div className="absolute inset-x-0 bottom-0 p-6 text-white">
-          <h1 className="text-3xl font-bold tracking-tight">{activity.title}</h1>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{activity.title}</h1>
           <p className="mt-1 text-sm text-slate-200">{format(activity.date!, 'dd MMM yyyy')}</p>
           <p className="text-sm text-slate-200">
             Hosted by{' '}

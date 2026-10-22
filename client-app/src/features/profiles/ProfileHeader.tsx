@@ -19,8 +19,8 @@ const ProfileHeader = ({ profile }: Props) => {
   return (
     <Card className="grid gap-6 md:grid-cols-3 md:items-center">
       <div className="flex items-center gap-5 md:col-span-2">
-        <Avatar src={profile.image} alt={profile.dispayName} className="size-24" />
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">{profile.dispayName}</h1>
+        <Avatar src={profile.image} alt={profile.dispayName} className="size-20 sm:size-24" />
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">{profile.dispayName}</h1>
       </div>
 
       <div className="space-y-4">
