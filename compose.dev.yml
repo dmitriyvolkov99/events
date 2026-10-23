@@ -22,7 +22,5 @@ services:
     build:
       context: ./client-app
       dockerfile: Dockerfile
-      args:
-        NGINX_CONF: nginx.dev.conf
 
     container_name: events-frontend

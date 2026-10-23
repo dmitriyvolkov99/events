@@ -6,10 +6,14 @@ import svgr from 'vite-plugin-svgr';
 export default defineConfig({
   plugins: [react(), tailwindcss(), svgr()],
   server: { port: 3000 },
-  build: { outDir: 'build' },
+  build: { 
+    outDir: 'build',
+    assetsDir: 'static'
+  },
   test: {
     environment: 'jsdom',
     globals: true,
     setupFiles: './src/setupTests.ts',
   },
+  
 });

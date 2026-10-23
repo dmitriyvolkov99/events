@@ -1,24 +1,19 @@
-FROM node:24 AS build
-
+FROM node:24-alpine AS build
 WORKDIR /app
 
-COPY package*.json ./
-
-RUN npm ci
+COPY package.json package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci
 
 COPY . .
-
 RUN npm run build
 
 
-FROM nginx:alpine
+FROM nginx:stable-alpine
 
-ARG NGINX_CONF=nginx.dev.conf
-
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/build /usr/share/nginx/html
-
-COPY ${NGINX_CONF} /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"]
+HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
+  CMD wget -qO /dev/null http://127.0.0.1/ || exit 1

@@ -1,8 +1,8 @@
 services:
 
   backend:
-    image: ghcr.io/${GHCR_OWNER}/events-backend:latest
+    image: ghcr.io/${GHCR_OWNER}/events-backend:${IMAGE_TAG:-latest}
 
 
   frontend:
-    image: ghcr.io/${GHCR_OWNER}/events-frontend:latest
+    image: ghcr.io/${GHCR_OWNER}/events-frontend:${IMAGE_TAG:-latest}

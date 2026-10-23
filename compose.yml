@@ -1,8 +1,15 @@
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
 
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     restart: unless-stopped
+    logging: *default-logging
 
     environment:
       ACCEPT_EULA: "Y"
@@ -25,6 +32,7 @@ services:
 
   backend:
     restart: unless-stopped
+    logging: *default-logging
 
     expose:
       - "8080"
@@ -42,6 +50,13 @@ services:
     volumes:
       - dataprotection-keys:/home/app/.aspnet/DataProtection-Keys
 
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c '</dev/tcp/127.0.0.1/8080' || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+
     depends_on:
       sqlserver:
         condition: service_healthy
@@ -49,13 +64,14 @@ services:
 
   frontend:
     restart: unless-stopped
+    logging: *default-logging
 
     ports:
       - "80:80"
 
     depends_on:
       backend:
-        condition: service_started
+        condition: service_healthy
 
 
 volumes:
