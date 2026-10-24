@@ -30,19 +30,19 @@ const ProfileContent = ({ profile }: Props) => {
       </TabList>
 
       <TabPanels>
-        <TabPanel>
+        <TabPanel className="animate-fade-in motion-reduce:animate-none">
           <Card>About content</Card>
         </TabPanel>
-        <TabPanel>
+        <TabPanel className="animate-fade-in motion-reduce:animate-none">
           <ProfilePhotos profile={profile} />
         </TabPanel>
-        <TabPanel>
+        <TabPanel className="animate-fade-in motion-reduce:animate-none">
           <ProfileActivities />
         </TabPanel>
-        <TabPanel>
+        <TabPanel className="animate-fade-in motion-reduce:animate-none">
           <ProfileFollowings />
         </TabPanel>
-        <TabPanel>
+        <TabPanel className="animate-fade-in motion-reduce:animate-none">
           <ProfileFollowings />
         </TabPanel>
       </TabPanels>

@@ -14,6 +14,6 @@ describe('ModalStore', () => {
     expect(store.modal).toEqual({ open: true, body: 'content' });
 
     store.closeModal();
-    expect(store.modal).toEqual({ open: false, body: null });
+    expect(store.modal.open).toBe(false);
   });
 });

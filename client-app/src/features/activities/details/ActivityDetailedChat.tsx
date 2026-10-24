@@ -8,6 +8,7 @@ import { useStore } from '../../../app/stores/store';
 import Card from '../../../app/ui/Card';
 import Avatar from '../../../app/ui/Avatar';
 import Spinner from '../../../app/ui/Spinner';
+import { cn } from '../../../app/ui/cn';
 import { fieldClass } from '../../../app/common/form/fieldClass';
 
 interface Props {
@@ -15,7 +16,7 @@ interface Props {
 }
 
 export default observer(function ActivityDetailedChat({ activityId }: Props) {
-  const { commentStore } = useStore();
+  const { commentStore, userStore } = useStore();
 
   useEffect(() => {
     if (activityId) commentStore.createHubConnection(activityId);
@@ -63,23 +64,34 @@ export default observer(function ActivityDetailedChat({ activityId }: Props) {
           )}
         </Formik>
 
-        <ul className="mt-6 space-y-5">
-          {commentStore.comments.map((comment) => (
-            <li key={comment.id} className="flex gap-3">
-              <Avatar src={comment.image} alt={comment.displayName} className="size-9 shrink-0" />
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-baseline gap-x-2">
-                  <Link to={`/profiles/${comment.username}`} className="text-sm font-semibold text-slate-900 dark:text-zinc-100 hover:text-brand-600">
-                    {comment.displayName}
-                  </Link>
-                  <span className="text-xs text-slate-400">
-                    {formatDistanceToNow(comment.createdAt, { addSuffix: true })}
-                  </span>
+        <ul className="mt-6 max-h-[28rem] space-y-2 overflow-y-auto pr-1">
+          {commentStore.comments.map((comment) => {
+            const isOwn = comment.username === userStore.user?.username;
+            return (
+              <li
+                key={comment.id}
+                className={cn('flex gap-3 rounded-xl p-3', isOwn && 'bg-brand-50 dark:bg-brand-500/10')}
+              >
+                <Avatar src={comment.image} alt={comment.displayName} className="size-9 shrink-0" />
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-baseline gap-x-2">
+                    <Link
+                      to={`/profiles/${comment.username}`}
+                      className="text-sm font-semibold text-slate-900 hover:text-brand-600 dark:text-zinc-100"
+                    >
+                      {comment.displayName}
+                    </Link>
+                    <span className="text-xs text-slate-400 dark:text-zinc-500">
+                      {formatDistanceToNow(comment.createdAt, { addSuffix: true })}
+                    </span>
+                  </div>
+                  <p className="mt-0.5 text-sm break-words whitespace-pre-wrap text-slate-700 dark:text-zinc-300">
+                    {comment.body}
+                  </p>
                 </div>
-                <p className="mt-0.5 text-sm break-words whitespace-pre-wrap text-slate-700 dark:text-zinc-300">{comment.body}</p>
-              </div>
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ul>
       </div>
     </Card>

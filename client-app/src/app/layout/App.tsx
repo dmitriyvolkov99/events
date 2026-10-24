@@ -25,7 +25,7 @@ function App() {
     <>
       <NavigationProgress />
       <ScrollToTop />
-      <ToastContainer position="bottom-right" hideProgressBar />
+      <ToastContainer position="bottom-right" autoClose={4000} hideProgressBar newestOnTop limit={3} />
       <ModalContainer />
       <Outlet />
     </>

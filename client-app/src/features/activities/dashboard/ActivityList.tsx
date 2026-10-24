@@ -25,8 +25,14 @@ const ActivityList = () => {
           <h3 className="pt-4 text-xs font-semibold tracking-wider text-brand-600 uppercase first:pt-0">
             {group}
           </h3>
-          {activities.map((activity) => (
-            <ActivityListItem key={activity.id} activity={activity} />
+          {activities.map((activity, i) => (
+            <div
+              key={activity.id}
+              className="animate-fade-up motion-reduce:animate-none"
+              style={{ animationDelay: `${Math.min(i, 6) * 50}ms` }}
+            >
+              <ActivityListItem activity={activity} />
+            </div>
           ))}
         </Fragment>
       ))}
