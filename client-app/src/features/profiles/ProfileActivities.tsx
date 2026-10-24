@@ -7,6 +7,7 @@ import { Calendar } from 'lucide-react';
 import { UserActivity } from '../../app/models/profile';
 import { useStore } from '../../app/stores/store';
 import Panel from '../../app/ui/Panel';
+import CategoryImage from '../../app/ui/CategoryImage';
 
 const panes = [
   { menuItem: 'Future Events', key: 'future' },
@@ -51,11 +52,7 @@ const ProfileActivities = () => {
                 to={`/activities/${activity.id}`}
                 className="block overflow-hidden rounded-xl ring-1 ring-slate-200 dark:ring-zinc-800 transition-shadow hover:shadow-md"
               >
-                <img
-                  src={`/assets/categoryImages/${activity.category}.jpg`}
-                  alt={activity.category}
-                  className="h-28 w-full object-cover"
-                />
+                <CategoryImage category={activity.category} className="h-28 w-full" />
                 <div className="p-3 text-center">
                   <p className="truncate font-semibold text-slate-900 dark:text-zinc-100">{activity.title}</p>
                   <p className="mt-1 text-xs text-slate-500 dark:text-zinc-400">{format(new Date(activity.date), 'do LLL')}</p>

@@ -36,20 +36,22 @@ const ActivityForm = () => {
     if (id) loadActivity(id).then((activity) => setActivity(new ActivityFormValues(activity)));
   }, [id, loadActivity]);
 
-async function handleFormSubmit(values: ActivityFormValues) {
-  try {
-    if (values.id) {
-      await updateActivity(values);
-      navigate(`/activities/${values.id}`);
-    } else {
-      const id = crypto.randomUUID();
-      await createActivity({ ...values, id });
-      navigate(`/activities/${id}`);
+  async function handleFormSubmit(values: ActivityFormValues) {
+    try {
+      if (values.id) {
+        await updateActivity(values);
+        toast.success('Event saved');
+        navigate(`/activities/${values.id}`);
+      } else {
+        const id = crypto.randomUUID();
+        await createActivity({ ...values, id });
+        toast.success('Event created');
+        navigate(`/activities/${id}`);
+      }
+    } catch (error) {
+      if (Array.isArray(error)) toast.error(error.join(', '));
     }
-  } catch (error) {
-    if (Array.isArray(error)) toast.error(error.join(', '));
   }
-}
 
   if (loadingInitial) return <LoadingComponent content="Loading event..." />;
 
@@ -67,7 +69,7 @@ async function handleFormSubmit(values: ActivityFormValues) {
         {({ handleSubmit, isValid, isSubmitting, dirty }) => (
           <Form onSubmit={handleSubmit} autoComplete="off">
             <h3 className="mb-3 text-xs font-semibold tracking-wider text-brand-600 uppercase">Event details</h3>
-            <MyTextInput name="title" placeholder="Title" />
+            <MyTextInput name="title" placeholder="Title" autoFocus={!id} />
             <MyTextArea rows={3} placeholder="Description" name="description" />
             <MySelectInput options={categoryOptions} placeholder="Category" name="category" />
             <MyDateInput

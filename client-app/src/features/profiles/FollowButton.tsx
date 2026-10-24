@@ -33,8 +33,8 @@ const FollowButton = ({ profile }: Props) => {
       {loading && <Spinner className="size-4" />}
       {profile.following ? (
         <>
-          <span className="group-hover:hidden">Following</span>
-          <span className="hidden group-hover:inline">Unfollow</span>
+          <span className="group-hover:hidden group-focus-visible:hidden">Following</span>
+          <span className="hidden group-hover:inline group-focus-visible:inline">Unfollow</span>
         </>
       ) : (
         'Follow'

@@ -8,6 +8,7 @@ import Button from '../../../app/ui/Button';
 import Badge from '../../../app/ui/Badge';
 import { useState } from 'react';
 import ConfirmDialog from '../../../app/ui/ConfirmDialog';
+import CategoryImage from '../../../app/ui/CategoryImage';
 
 interface Props {
   activity: Activity;
@@ -26,11 +27,7 @@ export default observer(function ActivityDetailedHeader({ activity }: Props) {
   return (
     <Card className="overflow-hidden p-0">
       <div className="relative">
-        <img
-          src={`/assets/categoryImages/${activity.category}.jpg`}
-          alt={activity.category}
-          className="h-48 sm:h-64 w-full object-cover"
-        />
+        <CategoryImage category={activity.category} priority className="h-48 w-full sm:h-64" />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/85 via-slate-900/30 to-transparent" />
 
         {activity.isCancelled && (

@@ -38,6 +38,18 @@
   }
 }
 
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: 2px;
+  }
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: none;
+  }
+}
+
 .react-calendar {
   width: 100%;
   border: none;

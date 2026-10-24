@@ -57,7 +57,7 @@ const ProfilePhotos = ({ profile }: Props) => {
           {profile.photos.map((photo) => (
             <li key={photo.id} className="overflow-hidden rounded-xl ring-1 ring-slate-200 dark:ring-zinc-800">
               <div className="relative">
-                <img src={photo.url} alt="" className="aspect-square w-full object-cover" />
+                <img src={photo.url} alt="" className="aspect-square w-full object-cover" loading="lazy" decoding="async" />
                 {photo.isMain && (
                   <div className="absolute top-2 left-2">
                     <Badge tone="green">Main</Badge>
