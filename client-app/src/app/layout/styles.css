@@ -110,3 +110,19 @@
   --toastify-color-light: #18181b;
   --toastify-text-color-light: #f4f4f5;
 }
+
+@keyframes nav-progress {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(250%); }
+}
+.nav-progress {
+  width: 40%;
+  animation: nav-progress 1s ease-in-out 150ms infinite backwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-progress {
+    width: 100%;
+    animation: none;
+    opacity: 0.6;
+  }
+}

@@ -6,6 +6,8 @@ import { useStore } from '../../../app/stores/store';
 import Card from '../../../app/ui/Card';
 import Button from '../../../app/ui/Button';
 import Badge from '../../../app/ui/Badge';
+import { useState } from 'react';
+import ConfirmDialog from '../../../app/ui/ConfirmDialog';
 
 interface Props {
   activity: Activity;
@@ -13,6 +15,13 @@ interface Props {
 
 export default observer(function ActivityDetailedHeader({ activity }: Props) {
   const { activityStore: { updateAttendance, loading, cancelActivityToggle } } = useStore();
+
+  const [confirmCancel, setConfirmCancel] = useState(false);
+
+  async function handleCancelActivity() {
+    await cancelActivityToggle();
+    setConfirmCancel(false);
+  }
 
   return (
     <Card className="overflow-hidden p-0">
@@ -47,8 +56,8 @@ export default observer(function ActivityDetailedHeader({ activity }: Props) {
           <>
             <Button
               variant={activity.isCancelled ? 'primary' : 'danger'}
-              onClick={cancelActivityToggle}
-              loading={loading}
+              onClick={activity.isCancelled ? cancelActivityToggle : () => setConfirmCancel(true)}
+              loading={activity.isCancelled && loading}
             >
               {activity.isCancelled ? 'Re-activate' : 'Cancel Activity'}
             </Button>
@@ -76,6 +85,18 @@ export default observer(function ActivityDetailedHeader({ activity }: Props) {
           </Button>
         )}
       </div>
+
+      <ConfirmDialog
+        open={confirmCancel}
+        title="Cancel this event?"
+        description="Attendees will see the event as cancelled. You can re-activate it later."
+        confirmLabel="Cancel event"
+        cancelLabel="Keep event"
+        loading={loading}
+        onConfirm={handleCancelActivity}
+        onClose={() => setConfirmCancel(false)}
+      />
+
     </Card>
   );
 });

@@ -1,12 +1,12 @@
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
 import { useParams } from 'react-router';
-import LoadingComponent from '../../../app/layout/LoadingComponent';
 import { useStore } from '../../../app/stores/store';
 import ActivityDetailedChat from './ActivityDetailedChat';
 import ActivityDetailedHeader from './ActivityDetailedHeader';
 import ActivityDetailedInfo from './ActivityDetailedInfo';
 import ActivityDetailedSidebar from './ActivityDetailedSidebar';
+import ActivityDetailsSkeleton from './ActivityDetailsSkeleton';
 
 const ActivityDetails = () => {
   const { activityStore } = useStore();
@@ -19,7 +19,7 @@ const ActivityDetails = () => {
     return () => clearSelectedActivity();
   }, [id, loadActivity, clearSelectedActivity]);
 
-  if (loadingInitial || !activity) return <LoadingComponent />;
+  if (loadingInitial || !activity) return <ActivityDetailsSkeleton />;
 
   return (
     <div className="grid gap-8 lg:grid-cols-3">

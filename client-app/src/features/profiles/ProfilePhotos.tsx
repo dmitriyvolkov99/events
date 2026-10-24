@@ -7,6 +7,7 @@ import { useStore } from '../../app/stores/store';
 import Panel from '../../app/ui/Panel';
 import Button from '../../app/ui/Button';
 import Badge from '../../app/ui/Badge';
+import ConfirmDialog from '../../app/ui/ConfirmDialog';
 
 interface Props {
   profile: Profile;
@@ -17,6 +18,14 @@ const ProfilePhotos = ({ profile }: Props) => {
   const [addPhotoMode, setAddPhotoMode] = useState(false);
   const [target, setTarget] = useState('');
 
+  const [photoToDelete, setPhotoToDelete] = useState<Photo | null>(null);
+
+  async function handleConfirmDelete() {
+    if (!photoToDelete) return;
+    await deletePhoto(photoToDelete);
+    setPhotoToDelete(null);
+  }
+
   function handlePhotoUpload(file: Blob) {
     uploadPhoto(file).then(() => setAddPhotoMode(false));
   }
@@ -26,10 +35,7 @@ const ProfilePhotos = ({ profile }: Props) => {
     setMainPhoto(photo);
   }
 
-  function handleDeletePhoto(photo: Photo, e: SyntheticEvent<HTMLButtonElement>) {
-    setTarget(e.currentTarget.name);
-    deletePhoto(photo);
-  }
+
 
   return (
     <Panel>
@@ -74,10 +80,8 @@ const ProfilePhotos = ({ profile }: Props) => {
                     variant="danger"
                     className="px-2.5 py-1.5"
                     aria-label="Delete photo"
-                    name={photo.id}
                     disabled={photo.isMain}
-                    loading={target === photo.id && loading}
-                    onClick={(e) => handleDeletePhoto(photo, e)}
+                    onClick={() => setPhotoToDelete(photo)}
                   >
                     <Trash2 className="size-4" />
                   </Button>
@@ -89,6 +93,17 @@ const ProfilePhotos = ({ profile }: Props) => {
       ) : (
         <p className="text-sm text-slate-500 dark:text-zinc-400">No photos yet.</p>
       )}
+
+      <ConfirmDialog
+        open={photoToDelete !== null}
+        title="Delete this photo?"
+        description="This cannot be undone."
+        confirmLabel="Delete"
+        loading={loading}
+        onConfirm={handleConfirmDelete}
+        onClose={() => setPhotoToDelete(null)}
+      />
+
     </Panel>
   );
 };

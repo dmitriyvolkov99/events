@@ -6,6 +6,7 @@ import { useStore } from '../stores/store';
 import LoadingComponent from './LoadingComponent';
 import ModalContainer from '../common/modals/ModalContainer';
 import ScrollToTop from './ScrollToTop';
+import NavigationProgress from './NavigationProgress';
 
 function App() {
   const { commonStore, userStore } = useStore();
@@ -22,6 +23,7 @@ function App() {
 
   return (
     <>
+      <NavigationProgress />
       <ScrollToTop />
       <ToastContainer position="bottom-right" hideProgressBar />
       <ModalContainer />
