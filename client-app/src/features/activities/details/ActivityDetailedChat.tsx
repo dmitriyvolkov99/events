@@ -33,7 +33,7 @@ export default observer(function ActivityDetailedChat({ activityId }: Props) {
         <Formik
           onSubmit={(values, { resetForm }) => commentStore.addComment(values).then(() => resetForm())}
           initialValues={{ body: '' }}
-          validationSchema={Yup.object({ body: Yup.string().required() })}
+          validationSchema={Yup.object({ body: Yup.string().required().max(2000) })}
         >
           {({ isSubmitting, isValid, handleSubmit }) => (
             <Form>

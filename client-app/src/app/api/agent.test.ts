@@ -128,4 +128,22 @@ describe('agent interceptors', () => {
     expect(toast.error).not.toHaveBeenCalled();
     expect(router.navigate).not.toHaveBeenCalled();
   });
+
+  it('shows a toast on 429', async () => {
+    respondWith(429);
+
+    await expect(agent.Account.current()).rejects.toMatchObject({ response: { status: 429 } });
+
+    expect(toast.error).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not show a toast when the login request returns 401', async () => {
+    respondWith(401);
+
+    await expect(agent.Account.login({ email: 'a@b.c', password: 'x' })).rejects.toMatchObject({
+      response: { status: 401 },
+    });
+
+    expect(toast.error).not.toHaveBeenCalled();
+  });
 });

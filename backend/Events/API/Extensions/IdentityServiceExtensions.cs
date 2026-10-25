@@ -20,11 +20,21 @@ public static class IdentityServiceExtensions
         services.AddIdentityCore<AppUser>(opt =>
         {
             opt.Password.RequireNonAlphanumeric = false;
+            opt.User.RequireUniqueEmail = true;
+            opt.Lockout.MaxFailedAccessAttempts = 5;
+            opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
         })
         .AddEntityFrameworkStores<DataContext>()
         .AddSignInManager<SignInManager<AppUser>>();
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]!));
+        var tokenKey = config["TokenKey"];
+        if (string.IsNullOrWhiteSpace(tokenKey) || Encoding.UTF8.GetByteCount(tokenKey) < 64)
+        {
+            throw new InvalidOperationException(
+                "TokenKey must be configured and be at least 64 bytes long (HMAC-SHA512).");
+        }
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(opt =>

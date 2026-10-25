@@ -3,11 +3,16 @@ using System.Threading.Tasks;
 using Application.Comments;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace API.SignalR
 {
+    [Authorize]
     public class ChatHub : Hub
     {
+        private const int MaxCommentLength = 2000;
+
         private readonly IMediator _mediator;
         public ChatHub(IMediator mediator)
         {
@@ -16,7 +21,17 @@ namespace API.SignalR
 
         public async Task SendComment(Create.Command command)
         {
+            if (string.IsNullOrWhiteSpace(command.Body) || command.Body.Length > MaxCommentLength)
+            {
+                throw new HubException($"Comment must be between 1 and {MaxCommentLength} characters.");
+            }
+
             var comment = await _mediator.Send(command);
+
+            if (!comment.IsSuccess)
+            {
+                throw new HubException(comment.Error ?? "Could not add the comment.");
+            }
 
             await Clients.Group(command.ActivityId.ToString())
                 .SendAsync("ReceiveComment", comment.Value);

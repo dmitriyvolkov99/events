@@ -21,12 +21,14 @@ public static class ApplicationsServiceExtensions
         {
             opt.AddPolicy("CorsPolicy", policy =>
             {
-                policy.AllowAnyMethod().AllowAnyHeader().AllowCredentials().WithOrigins("http://localhost:3000");
+                policy.AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials()
+                    .WithOrigins("http://localhost:3000")
+                    .WithExposedHeaders("Pagination");
             });
         });
 
-        //services.AddMediatR(typeof(List.Handler).Assembly);
-        //services.AddAutoMapper(typeof(MappingProfiles).Assembly);
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssembly(typeof(List.Handler).Assembly);

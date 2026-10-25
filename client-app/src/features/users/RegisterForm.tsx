@@ -11,7 +11,11 @@ const RegisterForm = () => {
   return (
     <Formik
       initialValues={{ dispayName: '', username: '', email: '', password: '', error: null }}
-      onSubmit={(values, { setErrors }) => userStore.register(values).catch((error) => setErrors({ error }))}
+      onSubmit={(values, { setErrors }) =>
+        userStore.register(values).catch((error) => {
+          if (error?.response?.status !== 429) setErrors({ error });
+        })
+      }
       validationSchema={Yup.object({
         dispayName: Yup.string().required(),
         username: Yup.string().required(),

@@ -27,6 +27,13 @@ public class ExceptionMiddleware(
         {
             await _next(context);
         }
+        catch (OperationCanceledException) when (context.RequestAborted.IsCancellationRequested)
+        {
+            _logger.LogDebug(
+                "Request aborted by the client: {Method} {Path}",
+                context.Request.Method,
+                context.Request.Path);
+        }
         catch (Exception ex)
         {
             _logger.LogError(
@@ -35,21 +42,19 @@ public class ExceptionMiddleware(
                 context.Request.Method,
                 context.Request.Path);
 
+            if (context.Response.HasStarted)
+            {
+                throw;
+            }
+
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
             var response = _env.IsDevelopment()
-                ? new AppException(
-                    context.Response.StatusCode,
-                    ex.Message,
-                    ex.StackTrace)
-                : new AppException(
-                    context.Response.StatusCode,
-                    "Server Error");
+                ? new AppException(context.Response.StatusCode, ex.Message, ex.StackTrace)
+                : new AppException(context.Response.StatusCode, "Server Error");
 
-            var json = JsonSerializer.Serialize(response, JsonOptions);
-
-            await context.Response.WriteAsync(json);
+            await context.Response.WriteAsync(JsonSerializer.Serialize(response, JsonOptions));
         }
     }
 }

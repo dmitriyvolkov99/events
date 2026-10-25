@@ -3,6 +3,7 @@ import agent from '../api/agent';
 import { User, UserFormValues } from '../models/user';
 import { store } from './store';
 import { router } from '../routes';
+import { isAxiosError } from 'axios';
 
 export default class UserStore {
   user: User | null = null;
@@ -38,7 +39,11 @@ export default class UserStore {
       const user = await agent.Account.current();
       runInAction(() => (this.user = user));
     } catch (error) {
-      console.log(error);
+      if (isAxiosError(error) && error.response?.status === 401) {
+        store.commonStore.setToken(null);
+      } else {
+        console.log(error);
+      }
     }
   };
 

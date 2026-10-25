@@ -49,10 +49,13 @@ axios.interceptors.response.use(
         }
         break;
       case 401:
-        toast.error('Please log in to continue');
+        if (!config?.url?.endsWith('/account/login')) toast.error('Please log in to continue');
         break;
       case 404:
         router.navigate('/not-found');
+        break;
+      case 429:
+        toast.error('Too many attempts. Please try again in a few minutes.');
         break;
       case 500:
         store.commonStore.setServerError(data as ServerError);

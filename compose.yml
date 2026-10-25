@@ -39,6 +39,7 @@ services:
 
     environment:
       ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
       TokenKey: ${TOKEN_KEY}
 
       Cloudinary__CloudName: ${CLOUDINARY_CLOUD_NAME}
