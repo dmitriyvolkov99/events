@@ -18,31 +18,19 @@ namespace Application.Activities
             public Guid Id { get; set; }
         }
 
-        public class Handler : IRequestHandler<Query, Result<ActivityDto>>
+        public class Handler(DataContext context, IMapper mapper, IUserAccessor userAccessor)
+            : IRequestHandler<Query, Result<ActivityDto>>
         {
-            private readonly DataContext _context;
-            private readonly IMapper _mapper;
-            private readonly IUserAccessor _userAccessor;
-            public Handler(DataContext context, IMapper mapper, IUserAccessor userAccessor)
-            {
-                _userAccessor = userAccessor;
-                _mapper = mapper;
-                _context = context;
-            }
-
             public async Task<Result<ActivityDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var activity = await _context.Activities
-                    .ProjectTo<ActivityDto>(
-                        _mapper.ConfigurationProvider,
-                        new { currentUsername = _userAccessor.GetUsername() }).FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken: cancellationToken);
+                var activity = await context.Activities
+                    .Where(a => a.Id == request.Id)
+                    .ProjectTo<ActivityDto>(mapper.ConfigurationProvider, new { currentUsername = userAccessor.GetUsername() })
+                    .FirstOrDefaultAsync(cancellationToken);
 
-                if (activity == null)
-                {
-                    return Result<ActivityDto>.Failure("Activity not found");
-                }
-
-                return Result<ActivityDto>.Success(activity);
+                return activity == null
+                    ? Result<ActivityDto>.NotFound("Activity not found")
+                    : Result<ActivityDto>.Success(activity);
             }
         }
     }

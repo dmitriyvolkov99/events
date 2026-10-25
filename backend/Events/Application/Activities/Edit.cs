@@ -27,63 +27,30 @@ public class Edit
         }
     }
 
-    public class Handler : IRequestHandler<Command, Result<Unit>>
+    public class Handler(DataContext context, IMapper mapper, IUserAccessor userAccessor, ILogger<Handler> logger)
+        : IRequestHandler<Command, Result<Unit>>
     {
-        private readonly DataContext _context;
-        private readonly IMapper _mapper;
-        private readonly IUserAccessor _userAccessor;
-        private readonly ILogger<Handler> _logger;
-
-        public Handler(
-            DataContext context,
-            IMapper mapper,
-            IUserAccessor userAccessor,
-            ILogger<Handler> logger)
-        {
-            _context = context;
-            _mapper = mapper;
-            _userAccessor = userAccessor;
-            _logger = logger;
-        }
-
         public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
         {
-            var username = _userAccessor.GetUsername();
+            var username = userAccessor.GetUsername();
 
-            var activity = await _context.Activities.FindAsync(
-                [request.Activity.Id],
-                cancellationToken);
+            var activity = await context.Activities.FindAsync([request.Activity.Id], cancellationToken);
 
             if (activity == null)
             {
-                _logger.LogWarning(
+                logger.LogWarning(
                     "Failed to update activity {ActivityId}: activity was not found. User: {Username}",
                     request.Activity.Id,
                     username);
-
-                return Result<Unit>.Failure("Activity not found");
+                return Result<Unit>.NotFound("Activity not found");
             }
 
-            _mapper.Map(request.Activity, activity);
+            mapper.Map(request.Activity, activity);
 
-            var result = await _context.SaveChangesAsync(cancellationToken) > 0;
+            // SaveChanges возвращает 0, если значения не изменились: это не ошибка
+            await context.SaveChangesAsync(cancellationToken);
 
-            if (!result)
-            {
-                _logger.LogError(
-                    "Failed to update activity {ActivityId}. User: {Username}",
-                    request.Activity.Id,
-                    username);
-
-                return Result<Unit>.Failure(
-                    "Failed to update the activity");
-            }
-
-            _logger.LogInformation(
-                "Activity {ActivityId} updated by user {Username}",
-                request.Activity.Id,
-                username);
-
+            logger.LogInformation("Activity {ActivityId} updated by user {Username}", request.Activity.Id, username);
             return Result<Unit>.Success(Unit.Value);
         }
     }

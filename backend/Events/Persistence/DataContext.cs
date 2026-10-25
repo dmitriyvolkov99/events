@@ -57,7 +57,17 @@ namespace Persistence
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
+            builder.Entity<Activity>(b =>
+            {
+                b.Property(x => x.Title).HasMaxLength(100);
+                b.Property(x => x.Description).HasMaxLength(2000);
+                b.Property(x => x.Category).HasMaxLength(50);
+                b.Property(x => x.City).HasMaxLength(100);
+                b.Property(x => x.Venue).HasMaxLength(200);
+                b.HasIndex(x => x.Date);
+            });
 
+            builder.Entity<Comment>().Property(x => x.Body).HasMaxLength(2000);
         }
 
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)

@@ -1,6 +1,5 @@
 using Application.Core;
 using Application.Interfaces;
-using Domain;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Persistence;
@@ -17,27 +16,14 @@ public class Delete
         public Guid Id { get; set; }
     }
 
-    public class Handler : IRequestHandler<Command, Result<Unit>>
+    public class Handler(DataContext context, ILogger<Handler> _logger, IUserAccessor userAccessor)
+        : IRequestHandler<Command, Result<Unit>>
     {
-        private readonly DataContext _context;
-        private readonly IUserAccessor _userAccessor;
-        private readonly ILogger<Handler> _logger;
-
-        public Handler(
-            DataContext context,
-            IUserAccessor userAccessor,
-            ILogger<Handler> logger)
-        {
-            _context = context;
-            _userAccessor = userAccessor;
-            _logger = logger;
-        }
-
         public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
         {
-            var username = _userAccessor.GetUsername();
+            var username = userAccessor.GetUsername();
 
-            var activity = await _context.Activities.FindAsync(
+            var activity = await context.Activities.FindAsync(
                 [request.Id],
                 cancellationToken);
 
@@ -48,12 +34,12 @@ public class Delete
                     request.Id,
                     username);
 
-                return Result<Unit>.Failure("Activity not found");
+                return Result<Unit>.NotFound("Activity not found");
             }
 
-            _context.Remove(activity);
+            context.Remove(activity);
 
-            var result = await _context.SaveChangesAsync(cancellationToken) > 0;
+            var result = await context.SaveChangesAsync(cancellationToken) > 0;
 
             if (!result)
             {

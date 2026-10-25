@@ -6,8 +6,6 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Persistence;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Application.Activities;
 
@@ -26,67 +24,47 @@ public class Create
         }
     }
 
-    public class Handler : IRequestHandler<Command, Result<Unit>>
+    public class Handler(DataContext context, IUserAccessor userAccessor, ILogger<Handler> logger)
+        : IRequestHandler<Command, Result<Unit>>
     {
-        private readonly DataContext _context;
-        private readonly IUserAccessor _userAccessor;
-        private readonly ILogger<Handler> _logger;
-
-        public Handler(
-            DataContext context,
-            IUserAccessor userAccessor,
-            ILogger<Handler> logger)
-        {
-            _userAccessor = userAccessor;
-            _context = context;
-            _logger = logger;
-        }
-
         public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
         {
-            var username = _userAccessor.GetUsername();
+            var username = userAccessor.GetUsername();
 
-            var user = await _context.Users
-                .FirstOrDefaultAsync(
-                    x => x.UserName == username,
-                    cancellationToken);
+            var user = await context.Users
+                .FirstOrDefaultAsync(x => x.UserName == username, cancellationToken);
 
             if (user == null)
             {
-                _logger.LogWarning(
-                    "Failed to create activity: user {Username} was not found",
-                    username);
-
+                logger.LogWarning("Failed to create activity: user {Username} was not found", username);
                 return Result<Unit>.Failure("User not found");
             }
 
-            var attendee = new ActivityAttendee
+            if (await context.Activities.AnyAsync(x => x.Id == request.Activity.Id, cancellationToken))
+            {
+                logger.LogWarning(
+                    "Failed to create activity: id {ActivityId} is already used. User: {Username}",
+                    request.Activity.Id,
+                    username);
+                return Result<Unit>.Failure("An activity with this id already exists");
+            }
+
+            request.Activity.Attendees.Add(new ActivityAttendee
             {
                 AppUser = user,
                 Activity = request.Activity,
                 isHost = true
-            };
+            });
 
-            request.Activity.Attendees.Add(attendee);
+            context.Activities.Add(request.Activity);
 
-            _context.Activities.Add(request.Activity);
-
-            var result = await _context.SaveChangesAsync(cancellationToken) > 0;
-
-            if (!result)
+            if (await context.SaveChangesAsync(cancellationToken) <= 0)
             {
-                _logger.LogError(
-                    "Failed to create activity for user {Username}",
-                    username);
-
+                logger.LogError("Failed to create activity for user {Username}", username);
                 return Result<Unit>.Failure("Failed to create activity");
             }
 
-            _logger.LogInformation(
-                "Activity {ActivityId} created by user {Username}",
-                request.Activity.Id,
-                username);
-
+            logger.LogInformation("Activity {ActivityId} created by user {Username}", request.Activity.Id, username);
             return Result<Unit>.Success(Unit.Value);
         }
     }
