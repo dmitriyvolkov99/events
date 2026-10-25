@@ -10,41 +10,42 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
-namespace Application.Followers
+namespace Application.Followers;
+
+public class List
 {
-    public class List
+    public class Query : IRequest<Result<List<Profiles.Profile>>>
     {
-        public class Query : IRequest<Result<List<Profiles.Profile>>>
-        {
-            public string Predicate { get; set; } = string.Empty;
-            public string Username { get; set; } = string.Empty;
-        }
+        public string Predicate { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
+    }
 
-        public class Handler(DataContext context, IMapper mapper, IUserAccessor userAccessor)
-            : IRequestHandler<Query, Result<List<Profiles.Profile>>>
+    public class Handler(DataContext context, IMapper mapper, IUserAccessor userAccessor)
+        : IRequestHandler<Query, Result<List<Profiles.Profile>>>
+    {
+        public async Task<Result<List<Profiles.Profile>>> Handle(Query request, CancellationToken cancellationToken)
         {
-            public async Task<Result<List<Profiles.Profile>>> Handle(Query request, CancellationToken cancellationToken)
+            var users = request.Predicate switch
             {
-                var profiles = new List<Profiles.Profile>();
+                "followers" => context.UserFollowings
+                    .Where(x => x.Target.UserName == request.Username)
+                    .Select(x => x.Observer),
+                "following" => context.UserFollowings
+                    .Where(x => x.Observer.UserName == request.Username)
+                    .Select(x => x.Target),
+                _ => null
+            };
 
-                switch (request.Predicate)
-                {
-                    case "followers":
-                        profiles = await context.UserFollowings.Where(x => x.Target.UserName == request.Username)
-                            .Select(u => u.Observer).ProjectTo<Profiles.Profile>(mapper.ConfigurationProvider, new { currentUsername = userAccessor.GetUsername() })
-                            .ToListAsync(cancellationToken: cancellationToken);
-                        break;
-                    case "following":
-                        profiles = await context.UserFollowings.Where(x => x.Observer.UserName == request.Username)
-                            .Select(u => u.Target).ProjectTo<Profiles.Profile>(mapper.ConfigurationProvider, new { currentUsername = userAccessor.GetUsername() })
-                            .ToListAsync(cancellationToken: cancellationToken);
-                        break;
-                    default:
-                        return Result<List<Profiles.Profile>>.Failure("Predicate must be 'followers' or 'following'");
-                }
-
-                return Result<List<Profiles.Profile>>.Success(profiles);
+            if (users is null)
+            {
+                return Result<List<Profiles.Profile>>.Failure("Predicate must be 'followers' or 'following'");
             }
+
+            var profiles = await users
+                .ProjectTo<Profiles.Profile>(mapper.ConfigurationProvider, new { currentUsername = userAccessor.GetUsername() })
+                .ToListAsync(cancellationToken);
+
+            return Result<List<Profiles.Profile>>.Success(profiles);
         }
     }
 }

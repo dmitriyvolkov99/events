@@ -20,11 +20,6 @@ public class AccountController(
         TokenService tokenService,
         ILogger<AccountController> logger) : ControllerBase
 {
-    private readonly UserManager<AppUser> _userManager = userManager;
-    private readonly SignInManager<AppUser> _signManager = signManager;
-    private readonly TokenService _tokenService = tokenService;
-    private readonly ILogger<AccountController> _logger = logger;
-
 
     /// <summary>
     /// Authenticates a user and returns a JWT access token.
@@ -39,32 +34,32 @@ public class AccountController(
     [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
     public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
     {
-        var normalizedEmail = _userManager.NormalizeEmail(loginDto.Email);
-        var user = await _userManager.Users
+        var normalizedEmail = userManager.NormalizeEmail(loginDto.Email);
+        var user = await userManager.Users
             .Include(p => p.Photos)
             .FirstOrDefaultAsync(x => x.NormalizedEmail == normalizedEmail);
 
         if (user == null)
         {
-            _logger.LogWarning("Login attempt failed: unknown email");
+            logger.LogWarning("Login attempt failed: unknown email");
             return Unauthorized();
         }
 
-        var result = await _signManager.CheckPasswordSignInAsync(user, loginDto.Password, lockoutOnFailure: true);
+        var result = await signManager.CheckPasswordSignInAsync(user, loginDto.Password, lockoutOnFailure: true);
 
         if (result.Succeeded)
         {
-            _logger.LogInformation("User {Username} logged in successfully", user.UserName);
+            logger.LogInformation("User {Username} logged in successfully", user.UserName);
             return CreateUserObject(user);
         }
 
         if (result.IsLockedOut)
         {
-            _logger.LogWarning("Login blocked: user {Username} is locked out", user.UserName);
+            logger.LogWarning("Login blocked: user {Username} is locked out", user.UserName);
             return StatusCode(StatusCodes.Status429TooManyRequests, "Too many failed attempts. Try again later.");
         }
 
-        _logger.LogWarning("Login attempt failed for user {Username}", user.UserName);
+        logger.LogWarning("Login attempt failed for user {Username}", user.UserName);
         return Unauthorized();
     }
 
@@ -79,18 +74,18 @@ public class AccountController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
     {
-        if (await _userManager.Users.AnyAsync(x => x.Email == registerDto.Email))
+        if (await userManager.Users.AnyAsync(x => x.Email == registerDto.Email))
         {
-            _logger.LogWarning(
+            logger.LogWarning(
                 "Registration attempt failed: email is already registered");
 
             ModelState.AddModelError("email", "Email taken");
             return ValidationProblem();
         }
 
-        if (await _userManager.Users.AnyAsync(x => x.UserName == registerDto.Username))
+        if (await userManager.Users.AnyAsync(x => x.UserName == registerDto.Username))
         {
-            _logger.LogWarning(
+            logger.LogWarning(
                 "Registration attempt failed: username {Username} is already taken",
                 registerDto.Username);
 
@@ -105,11 +100,11 @@ public class AccountController(
             UserName = registerDto.Username
         };
 
-        var result = await _userManager.CreateAsync(user, registerDto.Password);
+        var result = await userManager.CreateAsync(user, registerDto.Password);
 
         if (result.Succeeded)
         {
-            _logger.LogInformation("User {Username} registered successfully", user.UserName);
+            logger.LogInformation("User {Username} registered successfully", user.UserName);
             return CreateUserObject(user);
         }
 
@@ -118,7 +113,7 @@ public class AccountController(
             ModelState.AddModelError(error.Code, error.Description);
         }
 
-        _logger.LogWarning(
+        logger.LogWarning(
             "Registration failed for user {Username}: {Codes}",
             user.UserName,
             string.Join(", ", result.Errors.Select(e => e.Code)));
@@ -137,7 +132,7 @@ public class AccountController(
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<UserDto>> GetCurrentUser()
     {
-        var user = await _userManager.Users
+        var user = await userManager.Users
             .Include(p => p.Photos)
             .FirstOrDefaultAsync(x => x.Email == User.FindFirstValue(ClaimTypes.Email));
 
@@ -156,7 +151,7 @@ public class AccountController(
         {
             DispayName = user.DispayName,
             Image = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,
-            Token = _tokenService.CreateToken(user),
+            Token = tokenService.CreateToken(user),
             Username = user.UserName!
         };
     }

@@ -58,9 +58,9 @@ public class FollowToggle
                 return Result<Unit>.Failure("You cannot follow yourself");
             }
 
-            var following = await context.UserFollowings.FindAsync(observer.Id, target.Id, cancellationToken);
+            var following = await context.UserFollowings.FindAsync([observer.Id, target.Id], cancellationToken);
 
-            var isFollowing = following == null;
+            var startedFollowing = following == null;
 
             if (following == null)
             {
@@ -90,7 +90,7 @@ public class FollowToggle
                     "Failed to update following");
             }
 
-            if (isFollowing)
+            if (startedFollowing)
             {
                 logger.LogInformation(
                     "User {Username} started following user {TargetUsername}",

@@ -17,30 +17,13 @@ public class Delete
         public string Id { get; set; } = null!;
     }
 
-    public class Handler : IRequestHandler<Command, Result<Unit>>
+    public class Handler(DataContext context, IPhotoAccessor photoAccessor, IUserAccessor userAccessor, ILogger<Handler> logger) : IRequestHandler<Command, Result<Unit>>
     {
-        private readonly DataContext _context;
-        private readonly IPhotoAccessor _photoAccessor;
-        private readonly IUserAccessor _userAccessor;
-        private readonly ILogger<Handler> _logger;
-
-        public Handler(
-            DataContext context,
-            IPhotoAccessor photoAccessor,
-            IUserAccessor userAccessor,
-            ILogger<Handler> logger)
-        {
-            _userAccessor = userAccessor;
-            _photoAccessor = photoAccessor;
-            _context = context;
-            _logger = logger;
-        }
-
         public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
         {
-            var username = _userAccessor.GetUsername();
+            var username = userAccessor.GetUsername();
 
-            var user = await _context.Users
+            var user = await context.Users
                 .Include(p => p.Photos)
                 .FirstOrDefaultAsync(
                     x => x.UserName == username,
@@ -48,7 +31,7 @@ public class Delete
 
             if (user == null)
             {
-                _logger.LogWarning(
+                logger.LogWarning(
                     "Failed to delete photo {PhotoId}: user {Username} was not found",
                     request.Id,
                     username);
@@ -60,7 +43,7 @@ public class Delete
 
             if (photo == null)
             {
-                _logger.LogWarning(
+                logger.LogWarning(
                    "Failed to delete photo {PhotoId}: photo was not found for user {Username}",
                    request.Id,
                    username);
@@ -70,7 +53,7 @@ public class Delete
 
             if (photo.IsMain)
             {
-                _logger.LogWarning(
+                logger.LogWarning(
                     "User {Username} attempted to delete main photo {PhotoId}",
                     username,
                     request.Id);
@@ -78,22 +61,22 @@ public class Delete
                 return Result<Unit>.Failure("You cannot delete your main photo");
             }
 
-            _context.Photos.Remove(photo);
-            var success = await _context.SaveChangesAsync(cancellationToken) > 0;
+            context.Photos.Remove(photo);
+            var success = await context.SaveChangesAsync(cancellationToken) > 0;
 
             if (!success)
             {
-                _logger.LogError("Failed to delete photo {PhotoId} from the database. User: {Username}", photo.Id, username);
+                logger.LogError("Failed to delete photo {PhotoId} from the database. User: {Username}", photo.Id, username);
                 return Result<Unit>.Failure("Problem deleting photo");
             }
 
-            var result = await _photoAccessor.DeletePhoto(photo.Id);
+            var result = await photoAccessor.DeletePhoto(photo.Id);
             if (result == null)
             {
-                _logger.LogWarning("Photo {PhotoId} removed from the database but not from Cloudinary", photo.Id);
+                logger.LogWarning("Photo {PhotoId} removed from the database but not from Cloudinary", photo.Id);
             }
 
-            _logger.LogInformation("Photo {PhotoId} deleted by user {Username}", photo.Id, username);
+            logger.LogInformation("Photo {PhotoId} deleted by user {Username}", photo.Id, username);
 
             return Result<Unit>.Success(Unit.Value);
         }

@@ -4,9 +4,6 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Persistence;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Application.Photos;
 
@@ -17,35 +14,20 @@ public class SetMain
         public string Id { get; set; } = null!;
     }
 
-    public class Handler : IRequestHandler<Command, Result<Unit>>
+    public class Handler(DataContext context, IUserAccessor userAccessor, ILogger<Handler> logger)
+        : IRequestHandler<Command, Result<Unit>>
     {
-        private readonly IUserAccessor _userAccessor;
-        private readonly DataContext _context;
-        private readonly ILogger<Handler> _logger;
-
-        public Handler(
-            DataContext context,
-            IUserAccessor userAccessor,
-            ILogger<Handler> logger)
-        {
-            _context = context;
-            _userAccessor = userAccessor;
-            _logger = logger;
-        }
-
         public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
         {
-            var username = _userAccessor.GetUsername();
+            var username = userAccessor.GetUsername();
 
-            var user = await _context.Users
+            var user = await context.Users
                 .Include(p => p.Photos)
-                .FirstOrDefaultAsync(
-                    x => x.UserName == username,
-                    cancellationToken);
+                .FirstOrDefaultAsync(x => x.UserName == username, cancellationToken);
 
             if (user == null)
             {
-                _logger.LogWarning(
+                logger.LogWarning(
                     "Failed to set main photo {PhotoId}: user {Username} was not found",
                     request.Id,
                     username);
@@ -57,7 +39,7 @@ public class SetMain
 
             if (photo == null)
             {
-                _logger.LogWarning(
+                logger.LogWarning(
                     "Failed to set main photo {PhotoId}: photo was not found for user {Username}",
                     request.Id,
                     username);
@@ -65,29 +47,19 @@ public class SetMain
                 return Result<Unit>.Failure("Photo not found");
             }
 
-            var currentMain = user.Photos.FirstOrDefault(x => x.IsMain);
+            // уже главное: менять нечего, это не ошибка
+            if (photo.IsMain) return Result<Unit>.Success(Unit.Value);
 
-            currentMain?.IsMain = false;
+            foreach (var current in user.Photos.Where(x => x.IsMain))
+            {
+                current.IsMain = false;
+            }
 
             photo.IsMain = true;
 
-            var success = await _context.SaveChangesAsync(cancellationToken) > 0;
+            await context.SaveChangesAsync(cancellationToken);
 
-            if (!success)
-            {
-                _logger.LogError(
-                    "Failed to set photo {PhotoId} as main for user {Username}",
-                    request.Id,
-                    username);
-
-                return Result<Unit>.Failure(
-                    "Problem setting main photo");
-            }
-
-            _logger.LogInformation(
-                "Photo {PhotoId} set as main photo by user {Username}",
-                request.Id,
-                username);
+            logger.LogInformation("Photo {PhotoId} set as main photo by user {Username}", request.Id, username);
 
             return Result<Unit>.Success(Unit.Value);
         }

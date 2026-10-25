@@ -37,30 +37,13 @@ public class Add
         }
     }
 
-    public class Handler : IRequestHandler<Command, Result<Photo>>
+    public class Handler(DataContext context, IPhotoAccessor photoAccessor, IUserAccessor userAccessor, ILogger<Handler> logger) : IRequestHandler<Command, Result<Photo>>
     {
-        private readonly DataContext _context;
-        private readonly IPhotoAccessor _photoAccessor;
-        private readonly IUserAccessor _userAccessor;
-        private readonly ILogger<Handler> _logger;
-
-        public Handler(
-            DataContext context,
-            IPhotoAccessor photoAccessor,
-            IUserAccessor userAccessor,
-            ILogger<Handler> logger)
-        {
-            _userAccessor = userAccessor;
-            _photoAccessor = photoAccessor;
-            _context = context;
-            _logger = logger;
-        }
-
         public async Task<Result<Photo>> Handle(Command request, CancellationToken cancellationToken)
         {
-            var username = _userAccessor.GetUsername();
+            var username = userAccessor.GetUsername();
 
-            var user = await _context.Users
+            var user = await context.Users
                 .Include(p => p.Photos)
                 .FirstOrDefaultAsync(
                     x => x.UserName == username,
@@ -68,18 +51,18 @@ public class Add
 
             if (user == null)
             {
-                _logger.LogWarning(
+                logger.LogWarning(
                     "Failed to add photo: user {Username} was not found",
                     username);
 
                 return Result<Photo>.Failure("User not found");
             }
 
-            var photoUploadResult = await _photoAccessor.AddPhoto(request.File);
+            var photoUploadResult = await photoAccessor.AddPhoto(request.File);
 
             if (photoUploadResult == null)
             {
-                _logger.LogError(
+                logger.LogError(
                     "Failed to upload photo for user {Username}",
                     username);
 
@@ -99,11 +82,11 @@ public class Add
 
             user.Photos.Add(photo);
 
-            var result = await _context.SaveChangesAsync(cancellationToken) > 0;
+            var result = await context.SaveChangesAsync(cancellationToken) > 0;
 
             if (!result)
             {
-                _logger.LogError(
+                logger.LogError(
                     "Photo upload succeeded but database save failed for user {Username}. PhotoId: {PhotoId}",
                     username,
                     photo.Id);
@@ -112,7 +95,7 @@ public class Add
                     "Problem adding photo");
             }
 
-            _logger.LogInformation(
+            logger.LogInformation(
                 "Photo {PhotoId} added by user {Username}. IsMain: {IsMain}",
                 photo.Id,
                 username,

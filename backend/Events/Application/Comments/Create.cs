@@ -29,35 +29,18 @@ public class Create
         }
     }
 
-    public class Handler : IRequestHandler<Command, Result<CommentDto>>
+    public class Handler(DataContext context, IMapper mapper, IUserAccessor userAccessor, ILogger<Handler> logger) : IRequestHandler<Command, Result<CommentDto>>
     {
-        private readonly DataContext _context;
-        private readonly IMapper _mapper;
-        private readonly IUserAccessor _userAccessor;
-        private readonly ILogger<Handler> _logger;
-
-        public Handler(
-            DataContext context,
-            IMapper mapper,
-            IUserAccessor userAccessor,
-            ILogger<Handler> logger)
-        {
-            _userAccessor = userAccessor;
-            _mapper = mapper;
-            _context = context;
-            _logger = logger;
-        }
-
         public async Task<Result<CommentDto>> Handle(Command request, CancellationToken cancellationToken)
         {
-            var username = _userAccessor.GetUsername();
+            var username = userAccessor.GetUsername();
 
-            var activity = await _context.Activities
-                .FindAsync(request.ActivityId, cancellationToken);
+            var activity = await context.Activities
+                .FindAsync([request.ActivityId], cancellationToken);
 
             if (activity == null)
             {
-                _logger.LogWarning(
+                logger.LogWarning(
                     "Failed to create comment: activity {ActivityId} was not found. User: {Username}",
                     request.ActivityId,
                     username);
@@ -65,7 +48,7 @@ public class Create
                 return Result<CommentDto>.Failure("Activity not found");
             }
 
-            var user = await _context.Users
+            var user = await context.Users
                 .Include(p => p.Photos)
                 .SingleOrDefaultAsync(
                     x => x.UserName == username,
@@ -73,7 +56,7 @@ public class Create
 
             if (user == null)
             {
-                _logger.LogWarning(
+                logger.LogWarning(
                     "Failed to create comment for activity {ActivityId}: user {Username} was not found",
                     request.ActivityId,
                     username);
@@ -90,11 +73,11 @@ public class Create
 
             activity.Comments.Add(comment);
 
-            var success = await _context.SaveChangesAsync(cancellationToken) > 0;
+            var success = await context.SaveChangesAsync(cancellationToken) > 0;
 
             if (!success)
             {
-                _logger.LogError(
+                logger.LogError(
                     "Failed to create comment for activity {ActivityId}. User: {Username}",
                     request.ActivityId,
                     username);
@@ -102,14 +85,14 @@ public class Create
                 return Result<CommentDto>.Failure("Failed to add comment");
             }
 
-            _logger.LogInformation(
+            logger.LogInformation(
                 "Comment {CommentId} created on activity {ActivityId} by user {Username}",
                 comment.Id,
                 request.ActivityId,
                 username);
 
             return Result<CommentDto>.Success(
-                _mapper.Map<CommentDto>(comment));
+                mapper.Map<CommentDto>(comment));
         }
     }
 }

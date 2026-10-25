@@ -8,41 +8,30 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
-namespace Application.Profiles
+namespace Application.Profiles;
+
+public class Details
 {
-    public class Details
+    public class Query : IRequest<Result<Profile>>
     {
-        public class Query : IRequest<Result<Profile>>
-        {
-            public string Username { get; set; } = null!;
-        }
+        public string Username { get; set; } = null!;
+    }
 
-        public class Handler : IRequestHandler<Query, Result<Profile>>
+    public class Handler(DataContext context, IMapper mapper, IUserAccessor userAccessor) : IRequestHandler<Query, Result<Profile>>
+    {
+        public async Task<Result<Profile>> Handle(Query request, CancellationToken cancellationToken)
         {
-            private readonly DataContext _context;
-            private readonly IMapper _mapper;
-            private readonly IUserAccessor _userAccessor;
-            public Handler(DataContext context, IMapper mapper, IUserAccessor userAccessor)
+            var user = await context.Users.Where(x => x.UserName == request.Username)
+                .ProjectTo<Profile>(mapper.ConfigurationProvider, new { currentUsername = userAccessor.GetUsername() })
+                .SingleOrDefaultAsync(x => x.Username == request.Username, cancellationToken);
+
+            if (user == null)
             {
-                _userAccessor = userAccessor;
-                _mapper = mapper;
-                _context = context;
+                return Result<Profile>.Failure("User not found");
+
             }
 
-            public async Task<Result<Profile>> Handle(Query request, CancellationToken cancellationToken)
-            {
-                var user = await _context.Users.Where(x => x.UserName == request.Username)
-                    .ProjectTo<Profile>(_mapper.ConfigurationProvider, new { currentUsername = _userAccessor.GetUsername() })
-                    .SingleOrDefaultAsync(x => x.Username == request.Username, cancellationToken);
-
-                if (user == null)
-                {
-                    return Result<Profile>.Failure("User not found");
-
-                }
-
-                return Result<Profile>.Success(user);
-            }
+            return Result<Profile>.Success(user);
         }
     }
 }

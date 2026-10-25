@@ -13,8 +13,6 @@ namespace API.SignalR
     {
         private const int MaxCommentLength = 2000;
 
-        private readonly IMediator _mediator = mediator;
-
         public async Task SendComment(Create.Command command)
         {
             if (string.IsNullOrWhiteSpace(command.Body) || command.Body.Length > MaxCommentLength)
@@ -22,7 +20,7 @@ namespace API.SignalR
                 throw new HubException($"Comment must be between 1 and {MaxCommentLength} characters.");
             }
 
-            var comment = await _mediator.Send(command);
+            var comment = await mediator.Send(command);
 
             if (!comment.IsSuccess)
             {
@@ -51,9 +49,11 @@ namespace API.SignalR
 
             await Groups.AddToGroupAsync(Context.ConnectionId, parsedActivityId.ToString());
 
-            var result = await _mediator.Send(new List.Query { ActivityId = parsedActivityId });
+            var result = await mediator.Send(new List.Query { ActivityId = parsedActivityId });
 
             await Clients.Caller.SendAsync("LoadComments", result.Value);
+
+            await base.OnConnectedAsync();
         }
     }
 }

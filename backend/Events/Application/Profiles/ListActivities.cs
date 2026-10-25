@@ -10,45 +10,36 @@ using Persistence;
 using System;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Profiles
+namespace Application.Profiles;
+
+public class ListActivities
 {
-    public class ListActivities
+    public class Query : IRequest<Result<List<UserActivityDto>>>
     {
-        public class Query : IRequest<Result<List<UserActivityDto>>>
+        public string Username { get; set; } = null!;
+        public string Predicate { get; set; } = null!;
+    }
+
+    public class Handler(DataContext context, IMapper mapper) : IRequestHandler<Query, Result<List<UserActivityDto>>>
+    {
+        public async Task<Result<List<UserActivityDto>>> Handle(Query request, CancellationToken cancellationToken)
         {
-            public string Username { get; set; } = null!;
-            public string Predicate { get; set; } = null!;
-        }
+            var query = context.ActivityAttendees
+                .Where(u => u.AppUser.UserName == request.Username)
+                .OrderBy(a => a.Activity.Date)
+                .ProjectTo<UserActivityDto>(mapper.ConfigurationProvider)
+                .AsQueryable();
 
-        public class Handler : IRequestHandler<Query, Result<List<UserActivityDto>>>
-        {
-            private readonly DataContext _context;
-            private readonly IMapper _mapper;
-            public Handler(DataContext context, IMapper mapper)
+            query = request.Predicate switch
             {
-                _mapper = mapper;
-                _context = context;
-            }
+                "past" => query.Where(a => a.Date <= DateTime.UtcNow),
+                "hosting" => query.Where(a => a.HostUsername == request.Username),
+                _ => query.Where(a => a.Date >= DateTime.UtcNow)
+            };
 
-            public async Task<Result<List<UserActivityDto>>> Handle(Query request, CancellationToken cancellationToken)
-            {
-                var query = _context.ActivityAttendees
-                    .Where(u => u.AppUser.UserName == request.Username)
-                    .OrderBy(a => a.Activity.Date)
-                    .ProjectTo<UserActivityDto>(_mapper.ConfigurationProvider)
-                    .AsQueryable();
+            var activities = await query.ToListAsync(cancellationToken);
 
-                query = request.Predicate switch
-                {
-                    "past" => query.Where(a => a.Date <= DateTime.UtcNow),
-                    "hosting" => query.Where(a => a.HostUsername == request.Username),
-                    _ => query.Where(a => a.Date >= DateTime.UtcNow)
-                };
-
-                var activities = await query.ToListAsync(cancellationToken);
-
-                return Result<List<UserActivityDto>>.Success(activities);
-            }
+            return Result<List<UserActivityDto>>.Success(activities);
         }
     }
 }
