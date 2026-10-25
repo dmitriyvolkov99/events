@@ -34,7 +34,7 @@ const RegisterForm = () => {
             placeholder="Password"
             type="password"
             autoComplete="new-password"
-            hint="At least 6 characters, with upper and lower case letters and a digit"
+            hint="At least 8 characters, with upper and lower case letters and a digit"
           />
           <ErrorMessage name="error" render={() => <ValidationErrors errors={errors.error} />} />
           <Button disabled={!isValid || !dirty} loading={isSubmitting} type="submit" className="w-full">

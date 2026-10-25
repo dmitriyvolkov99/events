@@ -2,6 +2,7 @@ import { makeAutoObservable, reaction, runInAction } from "mobx";
 import agent from "../api/agent";
 import { Photo, Profile, UserActivity } from "../models/profile";
 import { store } from "./store";
+import { toast } from "react-toastify"
 
 export default class ProfileStore{
     profile: Profile | null = null;
@@ -71,8 +72,12 @@ export default class ProfileStore{
                 }
                 this.uploading = false;
             })
-        }catch{
-            runInAction(() => this.uploading = false)
+        }catch (error) {
+          if (Array.isArray(error)) {
+            toast.error(error.join(', '));
+          }
+          
+          runInAction(() => this.uploading = false)
         }
     }
 
