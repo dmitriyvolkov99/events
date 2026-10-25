@@ -21,6 +21,7 @@ public static class IdentityServiceExtensions
         {
             opt.Password.RequireNonAlphanumeric = false;
             opt.User.RequireUniqueEmail = true;
+            opt.Password.RequiredLength = 8;
             opt.Lockout.MaxFailedAccessAttempts = 5;
             opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
         })
@@ -67,10 +68,10 @@ public static class IdentityServiceExtensions
         services.AddAuthorizationBuilder()
             .AddPolicy("isActivityHost", policy =>
             {
-                policy.Requirements.Add(new IHostRequirement());
+                policy.Requirements.Add(new HostRequirement());
             });
 
-        services.AddTransient<IAuthorizationHandler, IHostRequirementHandler>();
+        services.AddTransient<IAuthorizationHandler, HostRequirementHandler>();
         services.AddScoped<TokenService>();
 
         return services;

@@ -1,6 +1,8 @@
 using Domain;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+
 
 namespace Persistence
 {
@@ -57,6 +59,19 @@ namespace Persistence
 
 
         }
+
+        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+        {
+            configurationBuilder
+                .Properties<DateTime>()
+                .HaveConversion<UtcDateTimeConverter>();
+        }
+
+        private sealed class UtcDateTimeConverter() : ValueConverter<DateTime, DateTime>(
+            v => v.Kind == DateTimeKind.Unspecified
+                ? DateTime.SpecifyKind(v, DateTimeKind.Utc)
+                : v.ToUniversalTime(),
+            v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
     }
 
 }

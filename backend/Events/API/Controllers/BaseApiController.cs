@@ -8,7 +8,7 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class BaseApiController : ControllerBase
+public abstract class BaseApiController : ControllerBase
 {
     private IMediator? _mediator;
 
@@ -37,7 +37,7 @@ public class BaseApiController : ControllerBase
 
         if (result.IsSuccess && result.Value != null)
         {
-            Response.AddPaginationHeader(result.Value.CurrentPage, result.Value.PagesSize, result.Value.TotalCount, result.Value.TotalPages);
+            Response.AddPaginationHeader(result.Value.CurrentPage, result.Value.PageSize, result.Value.TotalCount, result.Value.TotalPages);
             return Ok(result.Value);
         }
         if (result.IsSuccess && result.Value == null)

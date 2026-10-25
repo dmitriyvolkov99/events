@@ -49,6 +49,8 @@ namespace Application.Followers
                             .Select(u => u.Target).ProjectTo<Profiles.Profile>(_mapper.ConfigurationProvider, new { currentUsername = _userAccessor.GetUsername() })
                             .ToListAsync(cancellationToken: cancellationToken);
                         break;
+                    default:
+                        return Result<List<Profiles.Profile>>.Failure("Predicate must be 'followers' or 'following'");
                 }
 
                 return Result<List<Profiles.Profile>>.Success(profiles);

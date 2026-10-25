@@ -9,15 +9,11 @@ using Microsoft.AspNetCore.Authorization;
 namespace API.SignalR
 {
     [Authorize]
-    public class ChatHub : Hub
+    public class ChatHub(IMediator mediator) : Hub
     {
         private const int MaxCommentLength = 2000;
 
-        private readonly IMediator _mediator;
-        public ChatHub(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
+        private readonly IMediator _mediator = mediator;
 
         public async Task SendComment(Create.Command command)
         {

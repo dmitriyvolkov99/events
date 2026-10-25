@@ -32,6 +32,7 @@ public static class ApplicationsServiceExtensions
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssembly(typeof(List.Handler).Assembly);
+            cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
         });
 
         services.AddAutoMapper(cfg =>

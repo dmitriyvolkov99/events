@@ -12,7 +12,10 @@ namespace Application.Core
         {
             string? currentUsername = null;
 
-            CreateMap<Activity, Activity>();
+            CreateMap<Activity, Activity>()
+                .ForMember(d => d.Attendees, o => o.Ignore())
+                .ForMember(d => d.Comments, o => o.Ignore())
+                .ForMember(d => d.isCancelled, o => o.Ignore());
 
             CreateMap<Activity, ActivityDto>()
                 .ForMember(d => d.HostUsername, o => o.MapFrom(s => s.Attendees.Any(x => x.isHost)

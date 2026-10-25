@@ -1,6 +1,7 @@
 using Application.Core;
 using Application.Interfaces;
 using Domain;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,23 @@ public class Add
     public class Command : IRequest<Result<Photo>>
     {
         public IFormFile File { get; set; } = null!;
+    }
+
+    public class CommandValidator : AbstractValidator<Command>
+    {
+        private const long MaxFileSize = 10 * 1024 * 1024;
+        private static readonly string[] AllowedContentTypes =
+            ["image/jpeg", "image/png", "image/webp", "image/gif"];
+
+        public CommandValidator()
+        {
+            RuleFor(x => x.File)
+                .Cascade(CascadeMode.Stop)
+                .NotNull().WithMessage("Choose an image to upload")
+                .Must(f => f.Length is > 0 and <= MaxFileSize).WithMessage("The image must be up to 10 MB")
+                .Must(f => AllowedContentTypes.Contains(f.ContentType))
+                .WithMessage("Only JPEG, PNG, WebP or GIF images are allowed");
+        }
     }
 
     public class Handler : IRequestHandler<Command, Result<Photo>>

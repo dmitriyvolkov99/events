@@ -42,7 +42,7 @@ namespace Persistence
                 {
                     new() {
                         Title = "Past Event 1",
-                        Date = DateTime.Now.AddMonths(-2),
+                        Date = DateTime.UtcNow.AddMonths(-2),
                         Description = "Event 2 months ago",
                         Category = "drinks",
                         City = "London",
@@ -58,7 +58,7 @@ namespace Persistence
                     },
                     new() {
                         Title = "Past Event 2",
-                        Date = DateTime.Now.AddMonths(-1),
+                        Date = DateTime.UtcNow.AddMonths(-1),
                         Description = "Event 1 month ago",
                         Category = "culture",
                         City = "Paris",
@@ -79,7 +79,7 @@ namespace Persistence
                     },
                     new() {
                         Title = "Future Event 1",
-                        Date = DateTime.Now.AddMonths(1),
+                        Date = DateTime.UtcNow.AddMonths(1),
                         Description = "Event 1 month in future",
                         Category = "music",
                         City = "London",
@@ -100,7 +100,7 @@ namespace Persistence
                     },
                     new() {
                         Title = "Future Event 2",
-                        Date = DateTime.Now.AddMonths(2),
+                        Date = DateTime.UtcNow.AddMonths(2),
                         Description = "Event 2 months in future",
                         Category = "food",
                         City = "London",
@@ -121,7 +121,7 @@ namespace Persistence
                     },
                     new() {
                         Title = "Future Event 3",
-                        Date = DateTime.Now.AddMonths(3),
+                        Date = DateTime.UtcNow.AddMonths(3),
                         Description = "Event 3 months in future",
                         Category = "drinks",
                         City = "London",
@@ -142,7 +142,7 @@ namespace Persistence
                     },
                     new() {
                         Title = "Future Event 4",
-                        Date = DateTime.Now.AddMonths(4),
+                        Date = DateTime.UtcNow.AddMonths(4),
                         Description = "Event 4 months in future",
                         Category = "culture",
                         City = "London",
@@ -158,7 +158,7 @@ namespace Persistence
                     },
                     new() {
                         Title = "Future Event 5",
-                        Date = DateTime.Now.AddMonths(5),
+                        Date = DateTime.UtcNow.AddMonths(5),
                         Description = "Event 5 months in future",
                         Category = "drinks",
                         City = "London",
@@ -179,7 +179,7 @@ namespace Persistence
                     },
                     new() {
                         Title = "Future Event 6",
-                        Date = DateTime.Now.AddMonths(6),
+                        Date = DateTime.UtcNow.AddMonths(6),
                         Description = "Event 6 months in future",
                         Category = "music",
                         City = "London",
@@ -200,7 +200,7 @@ namespace Persistence
                     },
                     new() {
                         Title = "Future Event 7",
-                        Date = DateTime.Now.AddMonths(7),
+                        Date = DateTime.UtcNow.AddMonths(7),
                         Description = "Event 7 months in future",
                         Category = "travel",
                         City = "Berlin",
@@ -221,7 +221,7 @@ namespace Persistence
                     },
                     new() {
                         Title = "Future Event 8",
-                        Date = DateTime.Now.AddMonths(8),
+                        Date = DateTime.UtcNow.AddMonths(8),
                         Description = "Event 8 months in future",
                         Category = "drinks",
                         City = "London",

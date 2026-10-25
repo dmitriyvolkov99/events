@@ -12,14 +12,14 @@ namespace Application.Core
         {
             CurrentPage = pageNumber;
             TotalPages = (int)Math.Ceiling(count / (double)pageSize);
-            PagesSize = pageSize;
+            PageSize = pageSize;
             TotalCount = count;
             AddRange(items);
         }
 
         public int CurrentPage { get; set; }
         public int TotalPages { get; set; }
-        public int PagesSize { get; set; }
+        public int PageSize { get; set; }
         public int TotalCount { get; set; }
 
         public static async Task<PagedList<T>> CreateAsync(IQueryable<T> source, int pageNumber, int pageSize)

@@ -78,37 +78,22 @@ public class Delete
                 return Result<Unit>.Failure("You cannot delete your main photo");
             }
 
-            var result = await _photoAccessor.DeletePhoto(photo.Id);
-
-            if (result == null)
-            {
-                _logger.LogError(
-                    "Failed to delete photo {PhotoId} from Cloudinary. User: {Username}",
-                    photo.Id,
-                    username);
-
-                return Result<Unit>.Failure("Problem deleting photo from Cloudinary");
-            }
-
             _context.Photos.Remove(photo);
-
             var success = await _context.SaveChangesAsync(cancellationToken) > 0;
 
             if (!success)
             {
-                _logger.LogError(
-                    "Photo {PhotoId} was deleted from Cloudinary but failed to delete from database. User: {Username}",
-                    photo.Id,
-                    username);
-
-                return Result<Unit>.Failure(
-                    "Problem deleting photo from API");
+                _logger.LogError("Failed to delete photo {PhotoId} from the database. User: {Username}", photo.Id, username);
+                return Result<Unit>.Failure("Problem deleting photo");
             }
 
-            _logger.LogInformation(
-                "Photo {PhotoId} deleted by user {Username}",
-                photo.Id,
-                username);
+            var result = await _photoAccessor.DeletePhoto(photo.Id);
+            if (result == null)
+            {
+                _logger.LogWarning("Photo {PhotoId} removed from the database but not from Cloudinary", photo.Id);
+            }
+
+            _logger.LogInformation("Photo {PhotoId} deleted by user {Username}", photo.Id, username);
 
             return Result<Unit>.Success(Unit.Value);
         }

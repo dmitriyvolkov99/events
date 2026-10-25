@@ -10,6 +10,7 @@ public class PhotosController : BaseApiController
     /// Uploads a new photo for the current user.
     /// </summary>
     /// <param name="command">The photo file to upload.</param>
+    [RequestSizeLimit(11 * 1024 * 1024)]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

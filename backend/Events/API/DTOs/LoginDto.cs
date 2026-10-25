@@ -8,12 +8,12 @@ public class LoginDto
     /// User email address.
     /// </summary>
     [Required]
-    [EmailAddress]
+    [EmailAddress, StringLength(256)]
     public string Email { get; set; } = string.Empty;
 
     /// <summary>
     /// User password.
     /// </summary>
-    [Required]
+    [Required, StringLength(128)]
     public string Password { get; set; } = string.Empty;
 }

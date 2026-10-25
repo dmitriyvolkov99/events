@@ -14,24 +14,17 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AccountController : ControllerBase
-{
-    private readonly UserManager<AppUser> _userManager;
-    private readonly SignInManager<AppUser> _signManager;
-    private readonly TokenService _tokenService;
-    private readonly ILogger<AccountController> _logger;
-
-    public AccountController(
+public class AccountController(
         UserManager<AppUser> userManager,
         SignInManager<AppUser> signManager,
         TokenService tokenService,
-        ILogger<AccountController> logger)
-    {
-        _tokenService = tokenService;
-        _signManager = signManager;
-        _userManager = userManager;
-        _logger = logger;
-    }
+        ILogger<AccountController> logger) : ControllerBase
+{
+    private readonly UserManager<AppUser> _userManager = userManager;
+    private readonly SignInManager<AppUser> _signManager = signManager;
+    private readonly TokenService _tokenService = tokenService;
+    private readonly ILogger<AccountController> _logger = logger;
+
 
     /// <summary>
     /// Authenticates a user and returns a JWT access token.

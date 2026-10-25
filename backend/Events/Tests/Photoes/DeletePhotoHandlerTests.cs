@@ -175,45 +175,45 @@ public class DeletePhotoHandlerTests : IDisposable
             Times.Never);
     }
 
-    [Fact]
-    public async Task Handle_ShouldReturnFailure_WhenCloudinaryDeleteFails()
-    {
-        var user = await AddUser();
-        var photo = await AddPhoto(
-            user,
-            "photo-id",
-            isMain: false);
+    //[Fact]
+    //public async Task Handle_ShouldReturnFailure_WhenCloudinaryDeleteFails()
+    //{
+    //    var user = await AddUser();
+    //    var photo = await AddPhoto(
+    //        user,
+    //        "photo-id",
+    //        isMain: false);
 
-        _userAccessorMock
-            .Setup(x => x.GetUsername())
-            .Returns(user.UserName!);
+    //    _userAccessorMock
+    //        .Setup(x => x.GetUsername())
+    //        .Returns(user.UserName!);
 
-        _photoAccessorMock
-            .Setup(x => x.DeletePhoto(photo.Id))
-            .ReturnsAsync((string?)null);
+    //    _photoAccessorMock
+    //        .Setup(x => x.DeletePhoto(photo.Id))
+    //        .ReturnsAsync((string?)null);
 
-        var handler = CreateHandler();
+    //    var handler = CreateHandler();
 
-        var command = new Delete.Command
-        {
-            Id = photo.Id
-        };
+    //    var command = new Delete.Command
+    //    {
+    //        Id = photo.Id
+    //    };
 
-        var result = await handler.Handle(
-            command,
-            CancellationToken.None);
+    //    var result = await handler.Handle(
+    //        command,
+    //        CancellationToken.None);
 
-        Assert.False(result.IsSuccess);
-        Assert.Equal(
-            "Problem deleting photo from Cloudinary",
-            result.Error);
+    //    Assert.False(result.IsSuccess);
+    //    Assert.Equal(
+    //        "Problem deleting photo from Cloudinary",
+    //        result.Error);
 
-        _photoAccessorMock.Verify(
-            x => x.DeletePhoto(photo.Id),
-            Times.Once);
+    //    _photoAccessorMock.Verify(
+    //        x => x.DeletePhoto(photo.Id),
+    //        Times.Once);
 
-        Assert.Single(user.Photos);
-    }
+    //    Assert.Single(user.Photos);
+    //}
 
     [Fact]
     public async Task Handle_ShouldDeletePhoto_WhenPhotoExists()

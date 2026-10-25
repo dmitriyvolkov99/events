@@ -1,51 +1,34 @@
-using System;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
-using Microsoft.AspNetCore.Routing;
-namespace Infrastructure.Security
+
+namespace Infrastructure.Security;
+
+public class HostRequirement : IAuthorizationRequirement;
+
+public class HostRequirementHandler(DataContext dbContext, IHttpContextAccessor httpContextAccessor)
+    : AuthorizationHandler<HostRequirement>
 {
-    public class IHostRequirement : IAuthorizationRequirement
+    protected override async Task HandleRequirementAsync(
+        AuthorizationHandlerContext context,
+        HostRequirement requirement)
     {
+        var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var httpContext = httpContextAccessor.HttpContext;
 
-    }
+        if (userId is null || httpContext is null) return;
 
-    public class IHostRequirementHandler : AuthorizationHandler<IHostRequirement>
-    {
-        private readonly DataContext _dbContext;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        public IHostRequirementHandler(DataContext dbContext, IHttpContextAccessor httpContextAccessor)
-        {
-            _httpContextAccessor = httpContextAccessor;
-            _dbContext = dbContext;
-        }
+        if (!Guid.TryParse(httpContext.GetRouteValue("id")?.ToString(), out var activityId)) return;
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, IHostRequirement requirement)
-        {
-            var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var isHost = await dbContext.ActivityAttendees
+            .AsNoTracking()
+            .AnyAsync(
+                x => x.AppUserId == userId && x.ActivityId == activityId && x.isHost,
+                httpContext.RequestAborted);
 
-            if (userId == null) return Task.CompletedTask;
-
-            var activityId = Guid.Parse(
-                _httpContextAccessor.HttpContext?
-                    .GetRouteData()?
-                    .Values["id"]?
-                    .ToString()
-                    ?? string.Empty
-            );
-            //var activityId = Guid.Parse(_httpContextAccessor.HttpContext?.Request.RouteValues.SingleOrDefault(x => x.Key == "id").Value?.ToString());
-
-            var attendee = _dbContext.ActivityAttendees.AsNoTracking().SingleOrDefaultAsync(x => x.AppUserId == userId && x.ActivityId == activityId).Result;
-
-            if (attendee == null) return Task.CompletedTask;
-
-            if (attendee.isHost) context.Succeed(requirement);
-
-            return Task.CompletedTask;
-        }
+        if (isHost) context.Succeed(requirement);
     }
 }

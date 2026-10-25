@@ -37,9 +37,10 @@ public class ActivitiesController : BaseApiController
     /// <param name="activity">Activity data.</param>
     /// <returns>The created activity.</returns>
     [HttpPost]
-    public async Task<IActionResult> CreateActivity(Activity activity)
+    public async Task<IActionResult> CreateActivity(ActivityInput input)
     {
-        return HandleResult(await Mediator.Send(new Create.Command { Activity = activity }));
+        var id = input.Id == Guid.Empty ? Guid.NewGuid() : input.Id;
+        return HandleResult(await Mediator.Send(new Create.Command { Activity = input.ToActivity(id) }));
     }
 
     /// <summary>
@@ -49,16 +50,16 @@ public class ActivitiesController : BaseApiController
     /// <param name="activity">Updated activity data.</param>
     [Authorize(Policy = "isActivityHost")]
     [HttpPut("{id}")]
-    public async Task<IActionResult> EditActivity(Guid id, Activity activity)
+    public async Task<IActionResult> EditActivity(Guid id, ActivityInput input)
     {
-        activity.Id = id;
-        return HandleResult(await Mediator.Send(new Edit.Command { Activity = activity }));
+        return HandleResult(await Mediator.Send(new Edit.Command { Activity = input.ToActivity(id) }));
     }
 
     /// <summary>
     /// Deletes an activity.
     /// </summary>
     /// <param name="id">The activity identifier.</param>
+    [Authorize(Policy = "isActivityHost")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteActivity(Guid id)
     {

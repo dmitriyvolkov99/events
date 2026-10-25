@@ -66,6 +66,11 @@ public class FollowToggle
                 return Result<Unit>.Failure("Target user not found");
             }
 
+            if (observer.Id == target.Id)
+            {
+                return Result<Unit>.Failure("You cannot follow yourself");
+            }
+
             var following = await _context.UserFollowings.FindAsync(observer.Id, target.Id, cancellationToken);
 
             var isFollowing = following == null;

@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text.Json;
 using Application.Core;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -33,6 +34,17 @@ public class ExceptionMiddleware(
                 "Request aborted by the client: {Method} {Path}",
                 context.Request.Method,
                 context.Request.Path);
+        }
+        catch (ValidationException ex)
+        {
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+            var errors = ex.Errors
+                .GroupBy(e => e.PropertyName)
+                .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray());
+
+            await context.Response.WriteAsync(JsonSerializer.Serialize(new { errors }, JsonOptions));
         }
         catch (Exception ex)
         {
