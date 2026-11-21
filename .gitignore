@@ -18,6 +18,8 @@
 *.user
 *.suo
 
+*.Backup.tmp
+
 # Node
 
 **/node_modules/

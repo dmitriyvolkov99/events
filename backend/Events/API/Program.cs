@@ -50,6 +50,9 @@ builder.Services.AddOpenApi(options =>
     options.AddDocumentTransformer<BearerSecurityTransformer>();
 });
 
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<DataContext>("database");
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -105,6 +108,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<ChatHub>("/chat");
+
+app.MapHealthChecks("/health");
 
 
 app.Run();

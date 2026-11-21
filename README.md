@@ -109,6 +109,7 @@ docker compose -f compose.yml -f compose.dev.yml up -d --build
 |---|---|
 | http://localhost | Приложение |
 | http://localhost:8080/swagger/index.html | Swagger UI (только в Development) |
+| http://localhost:8080/health | Проверка работоспособности backend и базы (только в Development, порт 8080 открыт) |
 
 SQL Server наружу не публикуется, доступен только внутри сети Docker.
 
