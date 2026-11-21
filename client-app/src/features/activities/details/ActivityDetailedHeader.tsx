@@ -42,7 +42,7 @@ export default observer(function ActivityDetailedHeader({ activity }: Props) {
           <p className="text-sm text-slate-200">
             Hosted by{' '}
             <Link to={`/profiles/${activity.host?.username}`} className="font-semibold text-white underline-offset-2 hover:underline">
-              {activity.host?.dispayName}
+              {activity.host?.displayName}
             </Link>
           </p>
         </div>

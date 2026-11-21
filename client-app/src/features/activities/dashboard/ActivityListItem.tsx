@@ -21,7 +21,7 @@ const ActivityListItem = ({ activity }: Props) => {
   )}
 
       <div className="flex gap-4 p-5">
-        <Avatar src={activity.host?.image} alt={activity.host?.dispayName ?? 'Host'} className="size-14" />
+        <Avatar src={activity.host?.image} alt={activity.host?.displayName ?? 'Host'} className="size-14" />
         <div className="min-w-0 flex-1">
           <Link
             to={`/activities/${activity.id}`}
@@ -32,7 +32,7 @@ const ActivityListItem = ({ activity }: Props) => {
           <p className="mt-0.5 text-sm text-slate-500 dark:text-zinc-400">
             Hosted by{' '}
             <Link to={`/profiles/${activity.hostUsername}`} className="font-medium text-slate-700 dark:text-zinc-300 hover:text-brand-600">
-              {activity.host?.dispayName}
+              {activity.host?.displayName}
             </Link>
           </p>
           <div className="mt-2 flex flex-wrap gap-2">

@@ -26,7 +26,7 @@ public class HostRequirementHandler(DataContext dbContext, IHttpContextAccessor 
         var isHost = await dbContext.ActivityAttendees
             .AsNoTracking()
             .AnyAsync(
-                x => x.AppUserId == userId && x.ActivityId == activityId && x.isHost,
+                x => x.AppUserId == userId && x.ActivityId == activityId && x.IsHost,
                 httpContext.RequestAborted);
 
         if (isHost) context.Succeed(requirement);

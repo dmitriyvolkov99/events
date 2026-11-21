@@ -17,7 +17,7 @@ const ActivityListItemAttendee = ({ attendees }: Props) => {
           <Link to={`/profiles/${attendee.username}`} className="block rounded-full">
             <Avatar
               src={attendee.image}
-              alt={attendee.dispayName ?? attendee.username}
+              alt={attendee.displayName ?? attendee.username}
               className={clsx('size-9', attendee.following && 'ring-2 ring-red-500')}
             />
           </Link>

@@ -53,7 +53,7 @@ public class Create
             {
                 AppUser = user,
                 Activity = request.Activity,
-                isHost = true
+                IsHost = true
             });
 
             context.Activities.Add(request.Activity);

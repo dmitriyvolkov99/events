@@ -47,7 +47,7 @@ public class UpdateAttendance
                 return Result<Unit>.Failure("User not found");
             }
 
-            var host = activity.Attendees.FirstOrDefault(x => x.isHost);
+            var host = activity.Attendees.FirstOrDefault(x => x.IsHost);
 
             if (host == null)
             {
@@ -60,12 +60,12 @@ public class UpdateAttendance
             if (host.AppUserId == user.Id)
             {
                 // организатор: переключает отмену события
-                activity.isCancelled = !activity.isCancelled;
+                activity.IsCancelled = !activity.IsCancelled;
 
                 logger.LogInformation(
                     "Activity {ActivityId} cancellation status changed to {IsCancelled} by host {Username}",
                     request.Id,
-                    activity.isCancelled,
+                    activity.IsCancelled,
                     username);
             }
             else if (attendance != null)
@@ -76,12 +76,12 @@ public class UpdateAttendance
             }
             else
             {
-                if (activity.isCancelled)
+                if (activity.IsCancelled)
                 {
                     return Result<Unit>.Failure("You cannot join a cancelled activity");
                 }
 
-                activity.Attendees.Add(new ActivityAttendee { AppUser = user, Activity = activity, isHost = false });
+                activity.Attendees.Add(new ActivityAttendee { AppUser = user, Activity = activity, IsHost = false });
 
                 logger.LogInformation("User {Username} started attending activity {ActivityId}", username, request.Id);
             }

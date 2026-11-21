@@ -10,14 +10,14 @@ const RegisterForm = () => {
   const { userStore } = useStore();
   return (
     <Formik
-      initialValues={{ dispayName: '', username: '', email: '', password: '', error: null }}
+      initialValues={{ displayName: '', username: '', email: '', password: '', error: null }}
       onSubmit={(values, { setErrors }) =>
         userStore.register(values).catch((error) => {
           if (error?.response?.status !== 429) setErrors({ error });
         })
       }
       validationSchema={Yup.object({
-        dispayName: Yup.string().required(),
+        displayName: Yup.string().required(),
         username: Yup.string().required(),
         email: Yup.string().required().email(),
         password: Yup.string().required(),
@@ -26,7 +26,7 @@ const RegisterForm = () => {
       {({ handleSubmit, isSubmitting, errors, isValid, dirty }) => (
         <Form onSubmit={handleSubmit} autoComplete="off">
           <h2 className="mb-6 text-center text-2xl font-bold text-slate-900 dark:text-zinc-100">Sign up to Events</h2>
-          <MyTextInput name="dispayName" placeholder="Display Name" autoComplete="name" autoFocus />
+          <MyTextInput name="displayName" placeholder="Display Name" autoComplete="name" autoFocus />
           <MyTextInput name="username" placeholder="Username" autoComplete="username" />
           <MyTextInput name="email" placeholder="Email" autoComplete="email" />
           <MyTextInput

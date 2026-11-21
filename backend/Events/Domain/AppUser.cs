@@ -5,7 +5,7 @@ namespace Domain;
 
 public class AppUser : IdentityUser
 {
-    public string DispayName { get; set; } = string.Empty;
+    public string DisplayName { get; set; } = string.Empty;
     public string? Bio { get; set; }
 
     public ICollection<ActivityAttendee> Activities { get; set; } = [];

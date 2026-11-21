@@ -13,8 +13,8 @@ const ProfileFollowings = () => {
       <h3 className="mb-5 flex items-center gap-2 text-lg font-semibold text-slate-900 dark:text-zinc-100">
         <Users className="size-5 text-brand-600" />
         {activeTab === 3
-          ? `People following ${profile?.dispayName}`
-          : `People ${profile?.dispayName} is following`}
+          ? `People following ${profile?.displayName}`
+          : `People ${profile?.displayName} is following`}
       </h3>
 
       {followings.length === 0 && !loadingFollowings ? (

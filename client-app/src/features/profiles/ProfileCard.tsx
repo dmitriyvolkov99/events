@@ -16,10 +16,10 @@ const ProfileCard = ({ profile }: Props) => {
       <SafeImage
         src={profile.image}
         fallback="/assets/user.png"
-        alt={profile.dispayName}
+        alt={profile.displayName}
         className="aspect-square w-full object-cover"
       />
-        <p className="px-4 pt-3 pb-2 font-semibold text-slate-900 dark:text-zinc-100">{profile.dispayName}</p>
+        <p className="px-4 pt-3 pb-2 font-semibold text-slate-900 dark:text-zinc-100">{profile.displayName}</p>
       </Link>
       <div className="flex items-center gap-1.5 border-t border-slate-100 dark:border-zinc-800 px-4 py-2.5 text-sm text-slate-600 dark:text-zinc-400">
         <Users className="size-4 text-slate-400" />

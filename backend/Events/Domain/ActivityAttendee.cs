@@ -8,6 +8,6 @@ public class ActivityAttendee
     public AppUser AppUser { get; set; } = null!;
     public Guid ActivityId { get; set; }
     public Activity Activity { get; set; } = null!;
-    public bool isHost { get; set; }
+    public bool IsHost { get; set; }
 
 }

@@ -22,7 +22,7 @@ const ProfilePage = () => {
 
   return (
     <div className="space-y-6">
-      <title>{`${profile.dispayName} · Events`}</title>
+      <title>{`${profile.displayName} · Events`}</title>
       <ProfileHeader profile={profile} />
       <ProfileContent profile={profile} />
     </div>

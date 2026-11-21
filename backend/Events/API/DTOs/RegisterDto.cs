@@ -6,7 +6,7 @@ public class RegisterDto
 {
     /// <summary>Display name of the user.</summary>
     [Required, StringLength(50, MinimumLength = 2)]
-    public string DispayName { get; set; } = string.Empty;
+    public string DisplayName { get; set; } = string.Empty;
 
     /// <summary>User email address.</summary>
     [Required, EmailAddress, StringLength(256)]

@@ -5,7 +5,7 @@ public class UserDto
     /// <summary>
     /// User display name.
     /// </summary>
-    public string DispayName { get; set; } = string.Empty;
+    public string DisplayName { get; set; } = string.Empty;
 
     /// <summary>
     /// JWT access token.

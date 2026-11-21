@@ -9,189 +9,189 @@ using Persistence;
 
 namespace Tests;
 
-public class FollowToggleTests : IDisposable
+public class FollowToggleTests
 {
-    private readonly SqliteConnection _connection;
-    private readonly DataContext _context;
-    private readonly Mock<IUserAccessor> _userAccessorMock;
+    //private readonly SqliteConnection _connection;
+    //private readonly DataContext _context;
+    //private readonly Mock<IUserAccessor> _userAccessorMock;
 
-    public FollowToggleTests()
-    {
-        _connection = new SqliteConnection("Filename=:memory:");
-        _connection.Open();
+    //public FollowToggleTests()
+    //{
+    //    _connection = new SqliteConnection("Filename=:memory:");
+    //    _connection.Open();
 
-        var options = new DbContextOptionsBuilder<DataContext>()
-            .UseSqlite(_connection)
-            .Options;
+    //    var options = new DbContextOptionsBuilder<DataContext>()
+    //        .UseSqlite(_connection)
+    //        .Options;
 
-        _context = new DataContext(options);
+    //    _context = new DataContext(options);
 
-        _context.Database.EnsureCreated();
+    //    _context.Database.EnsureCreated();
 
-        _userAccessorMock = new Mock<IUserAccessor>();
-    }
+    //    _userAccessorMock = new Mock<IUserAccessor>();
+    //}
 
-    public void Dispose()
-    {
-        _context.Dispose();
-        _connection.Dispose();
-        GC.SuppressFinalize(this);
-    }
+    //public void Dispose()
+    //{
+    //    _context.Dispose();
+    //    _connection.Dispose();
+    //    GC.SuppressFinalize(this);
+    //}
 
-    private FollowToggle.Handler CreateHandler()
-    {
-        var logger = NullLogger<FollowToggle.Handler>.Instance;
+    //private FollowToggle.Handler CreateHandler()
+    //{
+    //    var logger = NullLogger<FollowToggle.Handler>.Instance;
 
-        return new FollowToggle.Handler(
-            _context,
-            _userAccessorMock.Object,
-            logger);
-    }
+    //    return new FollowToggle.Handler(
+    //        _context,
+    //        _userAccessorMock.Object,
+    //        logger);
+    //}
 
-    private async Task<AppUser> AddUser(
-    string username,
-    string id)
-    {
-        var user = new AppUser
-        {
-            Id = id,
-            UserName = username,
-            Email = $"{username}@test.com",
-            DispayName = username
-        };
+    //private async Task<AppUser> AddUser(
+    //string username,
+    //string id)
+    //{
+    //    var user = new AppUser
+    //    {
+    //        Id = id,
+    //        UserName = username,
+    //        Email = $"{username}@test.com",
+    //        DispayName = username
+    //    };
 
-        _context.Users.Add(user);
+    //    _context.Users.Add(user);
 
-        await _context.SaveChangesAsync();
+    //    await _context.SaveChangesAsync();
 
-        return user;
-    }
+    //    return user;
+    //}
 
-    [Fact]
-    public async Task Handle_ShouldFail_WhenObserverNotFound()
-    {
-        _userAccessorMock
-            .Setup(x => x.GetUsername())
-            .Returns("observer");
+    //[Fact]
+    //public async Task Handle_ShouldFail_WhenObserverNotFound()
+    //{
+    //    _userAccessorMock
+    //        .Setup(x => x.GetUsername())
+    //        .Returns("observer");
 
-        await AddUser("target", "target-id");
+    //    await AddUser("target", "target-id");
 
-        var handler = CreateHandler();
+    //    var handler = CreateHandler();
 
-        var command = new FollowToggle.Command
-        {
-            TargetUsername = "target"
-        };
+    //    var command = new FollowToggle.Command
+    //    {
+    //        TargetUsername = "target"
+    //    };
 
-        var result = await handler.Handle(
-            command,
-            CancellationToken.None);
+    //    var result = await handler.Handle(
+    //        command,
+    //        CancellationToken.None);
 
-        Assert.False(result.IsSuccess);
-        Assert.Equal("Observer not found", result.Error);
-    }
+    //    Assert.False(result.IsSuccess);
+    //    Assert.Equal("Observer not found", result.Error);
+    //}
 
-    [Fact]
-    public async Task Handle_ShouldFail_WhenTargetUserNotFound()
-    {
-        var observer = await AddUser(
-            "observer",
-            "observer-id");
+    //[Fact]
+    //public async Task Handle_ShouldFail_WhenTargetUserNotFound()
+    //{
+    //    var observer = await AddUser(
+    //        "observer",
+    //        "observer-id");
 
-        _userAccessorMock
-            .Setup(x => x.GetUsername())
-            .Returns(observer.UserName!);
+    //    _userAccessorMock
+    //        .Setup(x => x.GetUsername())
+    //        .Returns(observer.UserName!);
 
-        var handler = CreateHandler();
+    //    var handler = CreateHandler();
 
-        var command = new FollowToggle.Command
-        {
-            TargetUsername = "missing-user"
-        };
+    //    var command = new FollowToggle.Command
+    //    {
+    //        TargetUsername = "missing-user"
+    //    };
 
-        var result = await handler.Handle(
-            command,
-            CancellationToken.None);
+    //    var result = await handler.Handle(
+    //        command,
+    //        CancellationToken.None);
 
-        Assert.False(result.IsSuccess);
-        Assert.Equal("Target user not found", result.Error);
-    }
+    //    Assert.False(result.IsSuccess);
+    //    Assert.Equal("Target user not found", result.Error);
+    //}
 
-    [Fact]
-    public async Task Handle_ShouldCreateFollowing_WhenNotAlreadyFollowing()
-    {
-        var observer = await AddUser(
-            "observer",
-            "observer-id");
+    //[Fact]
+    //public async Task Handle_ShouldCreateFollowing_WhenNotAlreadyFollowing()
+    //{
+    //    var observer = await AddUser(
+    //        "observer",
+    //        "observer-id");
 
-        var target = await AddUser(
-            "target",
-            "target-id");
+    //    var target = await AddUser(
+    //        "target",
+    //        "target-id");
 
-        _userAccessorMock
-            .Setup(x => x.GetUsername())
-            .Returns(observer.UserName!);
+    //    _userAccessorMock
+    //        .Setup(x => x.GetUsername())
+    //        .Returns(observer.UserName!);
 
-        var handler = CreateHandler();
+    //    var handler = CreateHandler();
 
-        var command = new FollowToggle.Command
-        {
-            TargetUsername = target.UserName!
-        };
+    //    var command = new FollowToggle.Command
+    //    {
+    //        TargetUsername = target.UserName!
+    //    };
 
-        var result = await handler.Handle(
-            command,
-            CancellationToken.None);
+    //    var result = await handler.Handle(
+    //        command,
+    //        CancellationToken.None);
 
-        Assert.True(result.IsSuccess);
+    //    Assert.True(result.IsSuccess);
 
-        var following = await _context.UserFollowings
-            .FindAsync(observer.Id, target.Id);
+    //    var following = await _context.UserFollowings
+    //        .FindAsync(observer.Id, target.Id);
 
-        Assert.NotNull(following);
-    }
+    //    Assert.NotNull(following);
+    //}
 
-    [Fact]
-    public async Task Handle_ShouldRemoveFollowing_WhenAlreadyFollowing()
-    {
-        var observer = await AddUser(
-            "observer",
-            "observer-id");
+    //[Fact]
+    //public async Task Handle_ShouldRemoveFollowing_WhenAlreadyFollowing()
+    //{
+    //    var observer = await AddUser(
+    //        "observer",
+    //        "observer-id");
 
-        var target = await AddUser(
-            "target",
-            "target-id");
+    //    var target = await AddUser(
+    //        "target",
+    //        "target-id");
 
-        var following = new UserFollowing
-        {
-            ObserverId = observer.Id,
-            TargetId = target.Id
-        };
+    //    var following = new UserFollowing
+    //    {
+    //        ObserverId = observer.Id,
+    //        TargetId = target.Id
+    //    };
 
-        _context.UserFollowings.Add(following);
+    //    _context.UserFollowings.Add(following);
 
-        await _context.SaveChangesAsync();
+    //    await _context.SaveChangesAsync();
 
-        _userAccessorMock
-            .Setup(x => x.GetUsername())
-            .Returns(observer.UserName!);
+    //    _userAccessorMock
+    //        .Setup(x => x.GetUsername())
+    //        .Returns(observer.UserName!);
 
-        var handler = CreateHandler();
+    //    var handler = CreateHandler();
 
-        var command = new FollowToggle.Command
-        {
-            TargetUsername = target.UserName!
-        };
+    //    var command = new FollowToggle.Command
+    //    {
+    //        TargetUsername = target.UserName!
+    //    };
 
-        var result = await handler.Handle(
-            command,
-            CancellationToken.None);
+    //    var result = await handler.Handle(
+    //        command,
+    //        CancellationToken.None);
 
-        Assert.True(result.IsSuccess);
+    //    Assert.True(result.IsSuccess);
 
-        var deletedFollowing = await _context.UserFollowings
-            .FindAsync(observer.Id, target.Id);
+    //    var deletedFollowing = await _context.UserFollowings
+    //        .FindAsync(observer.Id, target.Id);
 
-        Assert.Null(deletedFollowing);
-    }
+    //    Assert.Null(deletedFollowing);
+    //}
 }

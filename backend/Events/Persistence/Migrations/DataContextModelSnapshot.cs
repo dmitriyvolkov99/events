@@ -46,6 +46,9 @@ namespace Persistence.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
+                    b.Property<bool>("IsCancelled")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -55,9 +58,6 @@ namespace Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
-
-                    b.Property<bool>("isCancelled")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -74,7 +74,7 @@ namespace Persistence.Migrations
                     b.Property<Guid>("ActivityId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("isHost")
+                    b.Property<bool>("IsHost")
                         .HasColumnType("bit");
 
                     b.HasKey("AppUserId", "ActivityId");
@@ -99,7 +99,7 @@ namespace Persistence.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DispayName")
+                    b.Property<string>("DisplayName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

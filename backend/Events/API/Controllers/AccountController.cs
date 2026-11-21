@@ -95,7 +95,7 @@ public class AccountController(
 
         var user = new AppUser
         {
-            DispayName = registerDto.DispayName,
+            DisplayName = registerDto.DisplayName,
             Email = registerDto.Email,
             UserName = registerDto.Username
         };
@@ -149,7 +149,7 @@ public class AccountController(
     {
         return new UserDto
         {
-            DispayName = user.DispayName,
+            DisplayName = user.DisplayName,
             Image = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,
             Token = tokenService.CreateToken(user),
             Username = user.UserName!

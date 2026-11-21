@@ -44,7 +44,7 @@ describe('LoginForm', () => {
   });
 
   it('logs the user in and goes to activities', async () => {
-    vi.mocked(agent.Account.login).mockResolvedValue({ username: 'bob', dispayName: 'Bob', token: 'jwt' });
+    vi.mocked(agent.Account.login).mockResolvedValue({ username: 'bob', displayName: 'Bob', token: 'jwt' });
     render(<LoginForm />);
 
     await fillAndSubmit('Pa$$w0rd');

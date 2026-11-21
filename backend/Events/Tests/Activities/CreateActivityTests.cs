@@ -113,6 +113,6 @@ public class CreateActivityTests
         var attendee = createdActivity.Attendees.First();
 
         Assert.Equal(user.Id, attendee.AppUserId);
-        Assert.True(attendee.isHost);
+        Assert.True(attendee.IsHost);
     }
 }

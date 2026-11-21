@@ -15,15 +15,15 @@ public class MappingProfiles : Profile
         CreateMap<Activity, Activity>()
             .ForMember(d => d.Attendees, o => o.Ignore())
             .ForMember(d => d.Comments, o => o.Ignore())
-            .ForMember(d => d.isCancelled, o => o.Ignore());
+            .ForMember(d => d.IsCancelled, o => o.Ignore());
 
         CreateMap<Activity, ActivityDto>()
-            .ForMember(d => d.HostUsername, o => o.MapFrom(s => s.Attendees.Any(x => x.isHost)
-                        ? s.Attendees.First(x => x.isHost).AppUser.UserName
+            .ForMember(d => d.HostUsername, o => o.MapFrom(s => s.Attendees.Any(x => x.IsHost)
+                        ? s.Attendees.First(x => x.IsHost).AppUser.UserName
                         : null));
 
         CreateMap<ActivityAttendee, AttendeeDto>()
-            .ForMember(d => d.DispayName, o => o.MapFrom(s => s.AppUser.DispayName))
+            .ForMember(d => d.DisplayName, o => o.MapFrom(s => s.AppUser.DisplayName))
             .ForMember(d => d.Username, o => o.MapFrom(s => s.AppUser.UserName))
             .ForMember(d => d.Bio, o => o.MapFrom(s => s.AppUser.Bio))
             .ForMember(d => d.Image, o => o.MapFrom(s => s.AppUser.Photos.Any(x => x.IsMain) ? s.AppUser.Photos.First(x => x.IsMain).Url : null))
@@ -38,7 +38,7 @@ public class MappingProfiles : Profile
             .ForMember(d => d.Following, o => o.MapFrom(s => s.Followers.Any(x => x.Observer.UserName == currentUsername)));
 
         CreateMap<Comment, CommentDto>()
-            .ForMember(d => d.DisplayName, o => o.MapFrom(s => s.Author.DispayName))
+            .ForMember(d => d.DisplayName, o => o.MapFrom(s => s.Author.DisplayName))
             .ForMember(d => d.Username, o => o.MapFrom(s => s.Author.UserName))
             .ForMember(d => d.Image, o => o.MapFrom(s => s.Author.Photos.Any(x => x.IsMain) ? s.Author.Photos.First(x => x.IsMain).Url : null));
 
@@ -47,6 +47,6 @@ public class MappingProfiles : Profile
             .ForMember(d => d.Date, o => o.MapFrom(s => s.Activity.Date))
             .ForMember(d => d.Title, o => o.MapFrom(s => s.Activity.Title))
             .ForMember(d => d.Category, o => o.MapFrom(s => s.Activity.Category))
-            .ForMember(d => d.HostUsername, o => o.MapFrom(s => s.Activity.Attendees.Any(x => x.isHost) ? s.Activity.Attendees.First(x => x.isHost).AppUser.UserName : null));
+            .ForMember(d => d.HostUsername, o => o.MapFrom(s => s.Activity.Attendees.Any(x => x.IsHost) ? s.Activity.Attendees.First(x => x.IsHost).AppUser.UserName : null));
     }
 }

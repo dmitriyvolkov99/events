@@ -118,7 +118,7 @@ public class UpdateAttendanceHandlerTests
             Category = "Sports",
             City = "Vilnius",
             Venue = "Test venue",
-            isCancelled = false
+            IsCancelled = false
         };
 
         var attendance = new ActivityAttendee
@@ -127,7 +127,7 @@ public class UpdateAttendanceHandlerTests
             AppUser = host,
             ActivityId = activity.Id,
             Activity = activity,
-            isHost = true
+            IsHost = true
         };
 
         activity.Attendees.Add(attendance);
@@ -160,7 +160,7 @@ public class UpdateAttendanceHandlerTests
         var savedActivity = await context.Activities
             .FirstAsync(x => x.Id == activity.Id);
 
-        Assert.True(savedActivity.isCancelled);
+        Assert.True(savedActivity.IsCancelled);
     }
 
     [Fact]
@@ -197,7 +197,7 @@ public class UpdateAttendanceHandlerTests
             AppUser = host,
             ActivityId = activity.Id,
             Activity = activity,
-            isHost = true
+            IsHost = true
         });
 
         activity.Attendees.Add(new ActivityAttendee
@@ -206,7 +206,7 @@ public class UpdateAttendanceHandlerTests
             AppUser = user,
             ActivityId = activity.Id,
             Activity = activity,
-            isHost = false
+            IsHost = false
         });
 
         context.Users.AddRange(host, user);
@@ -276,7 +276,7 @@ public class UpdateAttendanceHandlerTests
             AppUser = host,
             ActivityId = activity.Id,
             Activity = activity,
-            isHost = true
+            IsHost = true
         });
 
         context.Users.AddRange(host, user);
@@ -310,7 +310,7 @@ public class UpdateAttendanceHandlerTests
                 x.AppUserId == user.Id);
 
         Assert.NotNull(attendance);
-        Assert.False(attendance.isHost);
+        Assert.False(attendance.IsHost);
     }
 }
 

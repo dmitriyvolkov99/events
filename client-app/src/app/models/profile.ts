@@ -2,7 +2,7 @@ import { User } from './user';
 
 export class Profile {
   username: string;
-  dispayName: string;
+  displayName: string;
   image?: string;
   bio?: string;
   followersCount = 0;
@@ -12,7 +12,7 @@ export class Profile {
 
   constructor(user: User) {
     this.username = user.username;
-    this.dispayName = user.dispayName;
+    this.displayName = user.displayName;
     this.image = user.image;
   }
 }

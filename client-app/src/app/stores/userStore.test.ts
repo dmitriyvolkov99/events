@@ -13,7 +13,7 @@ import agent from '../api/agent';
 import { router } from '../routes';
 import { store } from './store';
 
-const user = { username: 'bob', dispayName: 'Bob', token: 'jwt-token' };
+const user = { username: 'bob', displayName: 'Bob', token: 'jwt-token' };
 const creds = { email: 'bob@test.com', password: 'Pa$$w0rd' };
 
 describe('UserStore', () => {

@@ -17,17 +17,17 @@ public class Seed
             var users = new List<AppUser>
             {
                 new() {
-                    DispayName = "Bob",
+                    DisplayName = "Bob",
                     UserName = "bob",
                     Email = "bob@test.com"
                 },
                 new() {
-                    DispayName = "Jane",
+                    DisplayName = "Jane",
                     UserName = "jane",
                     Email = "jane@test.com"
                 },
                 new() {
-                    DispayName = "Tom",
+                    DisplayName = "Tom",
                     UserName = "tom",
                     Email = "tom@test.com"
                 },
@@ -52,7 +52,7 @@ public class Seed
                         new ActivityAttendee
                         {
                             AppUser = users[0],
-                            isHost = true
+                            IsHost = true
                         }
                     ]
                 },
@@ -68,12 +68,12 @@ public class Seed
                         new ActivityAttendee
                         {
                             AppUser = users[0],
-                            isHost = true
+                            IsHost = true
                         },
                         new ActivityAttendee
                         {
                             AppUser = users[1],
-                            isHost = false
+                            IsHost = false
                         },
                     ]
                 },
@@ -89,12 +89,12 @@ public class Seed
                         new ActivityAttendee
                         {
                             AppUser = users[2],
-                            isHost = true
+                            IsHost = true
                         },
                         new ActivityAttendee
                         {
                             AppUser = users[1],
-                            isHost = false
+                            IsHost = false
                         },
                     ]
                 },
@@ -110,12 +110,12 @@ public class Seed
                         new ActivityAttendee
                         {
                             AppUser = users[0],
-                            isHost = true
+                            IsHost = true
                         },
                         new ActivityAttendee
                         {
                             AppUser = users[2],
-                            isHost = false
+                            IsHost = false
                         },
                     ]
                 },
@@ -131,12 +131,12 @@ public class Seed
                         new ActivityAttendee
                         {
                             AppUser = users[1],
-                            isHost = true
+                            IsHost = true
                         },
                         new ActivityAttendee
                         {
                             AppUser = users[0],
-                            isHost = false
+                            IsHost = false
                         },
                     ]
                 },
@@ -152,7 +152,7 @@ public class Seed
                         new ActivityAttendee
                         {
                             AppUser = users[1],
-                            isHost = true
+                            IsHost = true
                         }
                     ]
                 },
@@ -168,12 +168,12 @@ public class Seed
                         new ActivityAttendee
                         {
                             AppUser = users[0],
-                            isHost = true
+                            IsHost = true
                         },
                         new ActivityAttendee
                         {
                             AppUser = users[1],
-                            isHost = false
+                            IsHost = false
                         },
                     ]
                 },
@@ -189,12 +189,12 @@ public class Seed
                         new ActivityAttendee
                         {
                             AppUser = users[2],
-                            isHost = true
+                            IsHost = true
                         },
                         new ActivityAttendee
                         {
                             AppUser = users[1],
-                            isHost = false
+                            IsHost = false
                         },
                     ]
                 },
@@ -210,12 +210,12 @@ public class Seed
                         new ActivityAttendee
                         {
                             AppUser = users[0],
-                            isHost = true
+                            IsHost = true
                         },
                         new ActivityAttendee
                         {
                             AppUser = users[2],
-                            isHost = false
+                            IsHost = false
                         },
                     ]
                 },
@@ -231,12 +231,12 @@ public class Seed
                         new ActivityAttendee
                         {
                             AppUser = users[2],
-                            isHost = true
+                            IsHost = true
                         },
                         new ActivityAttendee
                         {
                             AppUser = users[1],
-                            isHost = false
+                            IsHost = false
                         },
                     ]
                 }
