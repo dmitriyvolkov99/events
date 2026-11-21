@@ -1,12 +1,11 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using Domain;
 using Microsoft.IdentityModel.Tokens;
 
 namespace API.Services;
 
-public class TokenService(IConfiguration config)
+public class TokenService(TokenSettings settings)
 {
     public string CreateToken(AppUser user)
     {
@@ -17,14 +16,11 @@ public class TokenService(IConfiguration config)
             new(ClaimTypes.Email, user.Email!)
         ];
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]!));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddDays(7),
-            SigningCredentials = creds
+            Expires = DateTime.UtcNow.Add(settings.Lifetime),
+            SigningCredentials = new SigningCredentials(settings.Key, SecurityAlgorithms.HmacSha512Signature)
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();

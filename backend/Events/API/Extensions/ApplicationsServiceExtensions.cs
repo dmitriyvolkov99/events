@@ -5,6 +5,8 @@ using Persistence;
 using Application.Interfaces;
 using Infrastructure.Security;
 using Infrastructure.Photos;
+using API.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace API.Extensions;
 
@@ -43,7 +45,10 @@ public static class ApplicationsServiceExtensions
         services.AddScoped<IUserAccessor, UserAccessor>();
         services.AddScoped<IPhotoAccessor, PhotoAccessor>();
 
-        services.Configure<CloudinarySettings>(config.GetSection("Cloudinary"));
+        services.AddOptions<CloudinarySettings>()
+            .Bind(config.GetSection("Cloudinary"))
+            .ValidateOnStart();
+        services.AddSingleton<IValidateOptions<CloudinarySettings>, CloudinarySettingsValidator>();
         services.AddSignalR();
 
         return services;
