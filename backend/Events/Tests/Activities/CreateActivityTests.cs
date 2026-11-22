@@ -1,118 +1,68 @@
 ﻿using Application.Activities;
-using Application.Interfaces;
+using Application.Core;
 using Domain;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
-using Persistence;
+using Tests.Support;
+using Xunit;
 
-namespace Tests.Activities;
+namespace Tests;
 
-public class CreateActivityTests
+public class CreateActivityTests : IDisposable
 {
-    private readonly Mock<IUserAccessor> _userAccessorMock;
+    private readonly TestDb _db = new();
 
-    public CreateActivityTests()
+    public void Dispose() => _db.Dispose();
+
+    private async Task<Result<Unit>> CreateAsync(Activity activity, string username)
     {
-        _userAccessorMock = new Mock<IUserAccessor>();
+        await using var context = _db.CreateContext();
+        var handler = new Create.Handler(
+            context: context,
+            userAccessor: new FakeUserAccessor(username),
+            logger: NullLogger<Create.Handler>.Instance);
+        return await handler.Handle(new Create.Command { Activity = activity }, CancellationToken.None);
     }
 
     [Fact]
-    public async Task Handle_ShouldFail_WhenUserDoesNotExist()
+    public async Task Creates_the_activity_and_makes_the_current_user_its_host()
     {
-        await using var context = TestDbContextFactory.Create();
+        await _db.SeedAsync(TestData.CreateUser("bob"));
 
-        _userAccessorMock
-            .Setup(x => x.GetUsername())
-            .Returns("testuser");
-
-        var logger = NullLogger<Create.Handler>.Instance;
-
-        var handler = new Create.Handler(
-            context,
-            _userAccessorMock.Object,
-            logger);
-
-        var command = new Create.Command
-        {
-            Activity = new Activity
-            {
-                Title = "Test Activity",
-                Description = "Test Description",
-                Date = DateTime.UtcNow,
-                Category = "Test",
-                City = "Vilnius",
-                Venue = "Test Venue"
-            }
-        };
-
-        var result = await handler.Handle(
-            command,
-            CancellationToken.None);
-
-        Assert.False(result.IsSuccess);
-        Assert.Equal("User not found", result.Error);
-    }
-
-
-    [Fact]
-    public async Task Handle_ShouldCreateActivity_WhenUserExists()
-    {
-        await using var context = TestDbContextFactory.Create();
-
-        var user = new AppUser
-        {
-            Id = "user-id",
-            UserName = "testuser",
-            Email = "test@example.com"
-        };
-
-        context.Users.Add(user);
-        await context.SaveChangesAsync();
-
-        _userAccessorMock
-            .Setup(x => x.GetUsername())
-            .Returns("testuser");
-
-        var logger = NullLogger<Create.Handler>.Instance;
-
-        var handler = new Create.Handler(
-            context,
-            _userAccessorMock.Object,
-            logger);
-
-        var activity = new Activity
-        {
-            Title = "Test Activity",
-            Description = "Test Description",
-            Date = DateTime.UtcNow,
-            Category = "Test",
-            City = "Vilnius",
-            Venue = "Test Venue"
-        };
-
-        var command = new Create.Command
-        {
-            Activity = activity
-        };
-
-        var result = await handler.Handle(
-            command,
-            CancellationToken.None);
+        var result = await CreateAsync(TestData.NewActivity("Picnic"), "bob");
 
         Assert.True(result.IsSuccess);
-
-        var createdActivity = await context.Activities
-            .Include(x => x.Attendees)
-            .FirstOrDefaultAsync(x => x.Id == activity.Id);
-
-        Assert.NotNull(createdActivity);
-
-        Assert.Single(createdActivity.Attendees);
-
-        var attendee = createdActivity.Attendees.First();
-
-        Assert.Equal(user.Id, attendee.AppUserId);
+        await using var verify = _db.CreateContext();
+        var saved = await verify.Activities.Include(a => a.Attendees).ThenInclude(a => a.AppUser).SingleAsync();
+        Assert.Equal("Picnic", saved.Title);
+        var attendee = Assert.Single(saved.Attendees);
         Assert.True(attendee.IsHost);
+        Assert.Equal("bob", attendee.AppUser.UserName);
+    }
+
+    [Fact]
+    public async Task Fails_when_the_current_user_does_not_exist()
+    {
+        var result = await CreateAsync(TestData.NewActivity(), "ghost");
+
+        Assert.False(result.IsSuccess);
+        await using var verify = _db.CreateContext();
+        Assert.Empty(await verify.Activities.ToListAsync());
+    }
+
+    [Fact]
+    public async Task Fails_when_the_id_is_already_used()
+    {
+        var existing = TestData.CreateActivity("Existing", DateTime.UtcNow.AddDays(1), TestData.CreateUser("bob"));
+        await _db.SeedAsync(existing);
+        var duplicate = TestData.NewActivity("Duplicate");
+        duplicate.Id = existing.Id;
+
+        var result = await CreateAsync(duplicate, "bob");
+
+        Assert.False(result.IsSuccess);
+        await using var verify = _db.CreateContext();
+        Assert.Equal("Existing", (await verify.Activities.SingleAsync()).Title);
     }
 }

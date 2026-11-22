@@ -25,7 +25,7 @@ public class Create
     {
         public CommandValidator()
         {
-            RuleFor(x => x.Body).NotEmpty();
+            RuleFor(x => x.Body).NotEmpty().MaximumLength(2000);
         }
     }
 

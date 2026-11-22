@@ -1,83 +1,52 @@
 ﻿using Application.Activities;
-using Application.Interfaces;
-using Domain;
+using Application.Core;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
+using Tests.Support;
+using Xunit;
 
-namespace Tests.Activities;
+namespace Tests;
 
-public class DeleteActivityTests
+public class DeleteActivityTests : IDisposable
 {
-    //private readonly Mock<IUserAccessor> _userAccessorMock;
+    private readonly TestDb _db = new();
 
-    //public DeleteActivityTests()
-    //{
-    //    _userAccessorMock = new Mock<IUserAccessor>();
+    public void Dispose() => _db.Dispose();
 
-    //}
+    private async Task<Result<Unit>> DeleteAsync(Guid id, string username)
+    {
+        await using var context = _db.CreateContext();
+        var handler = new Delete.Handler(
+            context: context,
+            userAccessor: new FakeUserAccessor(username),
+            _logger: NullLogger<Delete.Handler>.Instance);
+        return await handler.Handle(new Delete.Command { Id = id }, CancellationToken.None);
+    }
 
-    //[Fact]
-    //public async Task Handle_ShouldFail_WhenActivityDoesNotExist()
-    //{
-    //    await using var context = TestDbContextFactory.Create();
+    [Fact]
+    public async Task Deletes_the_activity_with_its_attendees_but_keeps_the_users()
+    {
+        var activity = TestData.CreateActivity(
+            "Event", DateTime.UtcNow.AddDays(2), TestData.CreateUser("bob"), TestData.CreateUser("tom"));
+        await _db.SeedAsync(activity);
 
-    //    var logger = NullLogger<Delete.Handler>.Instance;
+        var result = await DeleteAsync(activity.Id, "bob");
 
-    //    var handler = new Delete.Handler(
-    //        context,
-    //        _userAccessorMock.Object,
-    //        logger);
+        Assert.True(result.IsSuccess);
+        await using var verify = _db.CreateContext();
+        Assert.Empty(await verify.Activities.ToListAsync());
+        Assert.Empty(await verify.ActivityAttendees.ToListAsync());
+        Assert.Equal(2, await verify.Users.CountAsync());
+    }
 
-    //    var command = new Delete.Command
-    //    {
-    //        Id = Guid.NewGuid()
-    //    };
+    [Fact]
+    public async Task Returns_not_found_for_an_unknown_activity()
+    {
+        await _db.SeedAsync(TestData.CreateUser("bob"));
 
-    //    var result = await handler.Handle(
-    //        command,
-    //        CancellationToken.None);
+        var result = await DeleteAsync(Guid.NewGuid(), "bob");
 
-    //    Assert.False(result.IsSuccess);
-    //    Assert.Equal("Activity not found", result.Error);
-    //}
-
-    //[Fact]
-    //public async Task Handle_ShouldDeleteActivity_WhenActivityExists()
-    //{
-    //    await using var context = TestDbContextFactory.Create();
-
-    //    var activity = new Activity
-    //    {
-    //        Id = Guid.NewGuid(),
-    //        Title = "Test Activity",
-    //        Description = "Test Description",
-    //        Date = DateTime.UtcNow,
-    //        Category = "Test",
-    //        City = "Vilnius",
-    //        Venue = "Test Venue"
-    //    };
-
-    //    context.Activities.Add(activity);
-    //    await context.SaveChangesAsync();
-
-    //    var logger = NullLogger<Delete.Handler>.Instance;
-
-    //    var handler = new Delete.Handler(context, _userAccessorMock.Object, logger);
-
-    //    var command = new Delete.Command
-    //    {
-    //        Id = activity.Id
-    //    };
-
-    //    var result = await handler.Handle(
-    //        command,
-    //        CancellationToken.None);
-
-    //    Assert.True(result.IsSuccess);
-
-    //    var deletedActivity = await context.Activities
-    //        .FindAsync(activity.Id);
-
-    //    Assert.Null(deletedActivity);
-    //}
+        Assert.True(result.IsNotFound);
+    }
 }
