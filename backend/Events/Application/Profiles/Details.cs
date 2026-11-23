@@ -21,17 +21,14 @@ public class Details
     {
         public async Task<Result<Profile>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var user = await context.Users.Where(x => x.UserName == request.Username)
+            var user = await context.Users
+                .Where(x => x.UserName == request.Username)
                 .ProjectTo<Profile>(mapper.ConfigurationProvider, new { currentUsername = userAccessor.GetUsername() })
-                .SingleOrDefaultAsync(x => x.Username == request.Username, cancellationToken);
+                .SingleOrDefaultAsync(cancellationToken);
 
-            if (user == null)
-            {
-                return Result<Profile>.Failure("User not found");
-
-            }
-
-            return Result<Profile>.Success(user);
+            return user == null
+                ? Result<Profile>.NotFound("User not found")
+                : Result<Profile>.Success(user);
         }
     }
 }

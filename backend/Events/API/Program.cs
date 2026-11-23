@@ -55,8 +55,9 @@ builder.Services.AddHealthChecks()
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
+if (!app.Environment.IsEnvironment("Testing"))
 {
+    using var scope = app.Services.CreateScope();
     var services = scope.ServiceProvider;
     try
     {
@@ -113,3 +114,5 @@ app.MapHealthChecks("/health");
 
 
 app.Run();
+
+public partial class Program;

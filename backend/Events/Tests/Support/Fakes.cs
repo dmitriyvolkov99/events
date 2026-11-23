@@ -17,7 +17,7 @@ public sealed class FakePhotoAccessor : IPhotoAccessor
     public Task<PhotoUploadResult?> AddPhoto(IFormFile file) =>
         Task.FromResult<PhotoUploadResult?>(new PhotoUploadResult
         {
-            PublicId = "fake-public-id",
+            PublicId = Guid.NewGuid().ToString("N"),
             Url = "https://example.com/photo.jpg"
         });
 
